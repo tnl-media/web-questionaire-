@@ -609,6 +609,42 @@
             cursor: pointer;
             z-index: 1001;
         }
+
+        /* Form Submission Status */
+        .form-status {
+            display: none;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .form-status.success {
+            background-color: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #10b981;
+        }
+
+        .form-status.error {
+            background-color: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
         
         @media (max-width: 768px) {
             h1 {
@@ -662,7 +698,9 @@
                     <a href="#" class="btn btn-outline" style="display: none;" id="share-link">Copy Link</a>
                 </div>
                 
-                <form id="website-form">
+                <div id="form-status" class="form-status"></div>
+                
+                <form id="website-form" action="https://formspree.io/f/xwplavew" method="POST">
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-user-circle"></i></div>
@@ -672,24 +710,24 @@
                         <div class="form-row">
                             <div class="form-col form-group">
                                 <label for="name" class="required-field"><i class="fas fa-user"></i> Your Name</label>
-                                <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required>
                             </div>
                             
                             <div class="form-col form-group">
                                 <label for="business"><i class="fas fa-building"></i> Business/Organization Name</label>
-                                <input type="text" id="business" class="form-control" placeholder="Company or organization name">
+                                <input type="text" id="business" name="business" class="form-control" placeholder="Company or organization name">
                             </div>
                         </div>
                         
                         <div class="form-row">
                             <div class="form-col form-group">
                                 <label for="email" class="required-field"><i class="fas fa-envelope"></i> Email Address</label>
-                                <input type="email" id="email" class="form-control" placeholder="Your email address" required>
+                                <input type="email" id="email" name="email" class="form-control" placeholder="Your email address" required>
                             </div>
                             
                             <div class="form-col form-group">
                                 <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
-                                <input type="tel" id="phone" class="form-control" placeholder="Your phone number">
+                                <input type="tel" id="phone" name="phone" class="form-control" placeholder="Your phone number">
                             </div>
                         </div>
                     </div>
@@ -702,7 +740,7 @@
                         
                         <div class="form-group">
                             <label for="website-purpose" class="required-field">What's the main purpose of your website?</label>
-                            <select id="website-purpose" class="form-control" required>
+                            <select id="website-purpose" name="website-purpose" class="form-control" required>
                                 <option value="">Select your main goal...</option>
                                 <option value="business-info">Present business information</option>
                                 <option value="sell-products">Sell products online</option>
@@ -717,7 +755,7 @@
                         
                         <div class="form-group">
                             <label for="visitor-action">What's the #1 action you want visitors to take?</label>
-                            <input type="text" id="visitor-action" class="form-control" placeholder="e.g., Make a purchase, Contact you, etc.">
+                            <input type="text" id="visitor-action" name="visitor-action" class="form-control" placeholder="e.g., Make a purchase, Contact you, etc.">
                         </div>
                     </div>
                     
@@ -731,32 +769,32 @@
                             <label>What style should your website have? (Select all that apply)</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="style" value="Clean & Minimal">
+                                    <input type="checkbox" name="style[]" value="Clean & Minimal">
                                     <span class="custom-checkbox"></span>
                                     Clean & Minimal
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="style" value="Modern & Bold">
+                                    <input type="checkbox" name="style[]" value="Modern & Bold">
                                     <span class="custom-checkbox"></span>
                                     Modern & Bold
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="style" value="Corporate & Professional">
+                                    <input type="checkbox" name="style[]" value="Corporate & Professional">
                                     <span class="custom-checkbox"></span>
                                     Corporate & Professional
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="style" value="Playful & Fun">
+                                    <input type="checkbox" name="style[]" value="Playful & Fun">
                                     <span class="custom-checkbox"></span>
                                     Playful & Fun
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="style" value="Luxury & Elegant">
+                                    <input type="checkbox" name="style[]" value="Luxury & Elegant">
                                     <span class="custom-checkbox"></span>
                                     Luxury & Elegant
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="style" value="Creative & Artistic">
+                                    <input type="checkbox" name="style[]" value="Creative & Artistic">
                                     <span class="custom-checkbox"></span>
                                     Creative & Artistic
                                 </label>
@@ -767,42 +805,42 @@
                             <label>What pages will you need? (Select all that apply)</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages" value="Home" checked>
+                                    <input type="checkbox" name="pages[]" value="Home" checked>
                                     <span class="custom-checkbox"></span>
                                     Home
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages" value="About">
+                                    <input type="checkbox" name="pages[]" value="About">
                                     <span class="custom-checkbox"></span>
                                     About
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages" value="Services">
+                                    <input type="checkbox" name="pages[]" value="Services">
                                     <span class="custom-checkbox"></span>
                                     Services
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages" value="Products">
+                                    <input type="checkbox" name="pages[]" value="Products">
                                     <span class="custom-checkbox"></span>
                                     Products
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages" value="Gallery/Portfolio">
+                                    <input type="checkbox" name="pages[]" value="Gallery/Portfolio">
                                     <span class="custom-checkbox"></span>
                                     Gallery/Portfolio
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages" value="Blog">
+                                    <input type="checkbox" name="pages[]" value="Blog">
                                     <span class="custom-checkbox"></span>
                                     Blog
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages" value="Contact">
+                                    <input type="checkbox" name="pages[]" value="Contact">
                                     <span class="custom-checkbox"></span>
                                     Contact
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages" value="FAQ">
+                                    <input type="checkbox" name="pages[]" value="FAQ">
                                     <span class="custom-checkbox"></span>
                                     FAQ
                                 </label>
@@ -813,32 +851,32 @@
                             <label>Do you need any of these features? (Select all that apply)</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features" value="Contact Form">
+                                    <input type="checkbox" name="features[]" value="Contact Form">
                                     <span class="custom-checkbox"></span>
                                     Contact Form
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features" value="Online Store">
+                                    <input type="checkbox" name="features[]" value="Online Store">
                                     <span class="custom-checkbox"></span>
                                     Online Store
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features" value="Booking System">
+                                    <input type="checkbox" name="features[]" value="Booking System">
                                     <span class="custom-checkbox"></span>
                                     Booking System
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features" value="Newsletter Signup">
+                                    <input type="checkbox" name="features[]" value="Newsletter Signup">
                                     <span class="custom-checkbox"></span>
                                     Newsletter Signup
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features" value="Social Media Integration">
+                                    <input type="checkbox" name="features[]" value="Social Media Integration">
                                     <span class="custom-checkbox"></span>
                                     Social Media Integration
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features" value="Photo Gallery">
+                                    <input type="checkbox" name="features[]" value="Photo Gallery">
                                     <span class="custom-checkbox"></span>
                                     Photo Gallery
                                 </label>
@@ -856,7 +894,7 @@
                         </div>
                     </div>
                     
-                    <!-- New AI & Automation Section -->
+                    <!-- AI & Automation Section -->
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-robot"></i></div>
@@ -867,27 +905,27 @@
                             <label>Which AI features would enhance your business? (Select all that apply)</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features" value="Chatbot">
+                                    <input type="checkbox" name="ai-features[]" value="Chatbot">
                                     <span class="custom-checkbox"></span>
                                     AI Customer Support Chatbot
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features" value="Content-Generation">
+                                    <input type="checkbox" name="ai-features[]" value="Content-Generation">
                                     <span class="custom-checkbox"></span>
                                     Automated Content Generation
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features" value="Personalization">
+                                    <input type="checkbox" name="ai-features[]" value="Personalization">
                                     <span class="custom-checkbox"></span>
                                     User Experience Personalization
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features" value="Analytics">
+                                    <input type="checkbox" name="ai-features[]" value="Analytics">
                                     <span class="custom-checkbox"></span>
                                     Predictive Analytics Dashboard
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features" value="Automation">
+                                    <input type="checkbox" name="ai-features[]" value="Automation">
                                     <span class="custom-checkbox"></span>
                                     Business Process Automation
                                 </label>
@@ -895,7 +933,7 @@
                         </div>
                     </div>
                     
-                    <!-- New Web3 Section -->
+                    <!-- Web3 Section -->
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-link"></i></div>
@@ -906,27 +944,27 @@
                             <label>Do you need any Web3 functionality?</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features" value="Wallet">
+                                    <input type="checkbox" name="web3-features[]" value="Wallet">
                                     <span class="custom-checkbox"></span>
                                     Wallet Connection
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features" value="NFT">
+                                    <input type="checkbox" name="web3-features[]" value="NFT">
                                     <span class="custom-checkbox"></span>
                                     NFT Showcase/Marketplace
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features" value="Token">
+                                    <input type="checkbox" name="web3-features[]" value="Token">
                                     <span class="custom-checkbox"></span>
                                     Token-Gated Content
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features" value="DApp">
+                                    <input type="checkbox" name="web3-features[]" value="DApp">
                                     <span class="custom-checkbox"></span>
                                     Decentralized Application Integration
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features" value="SmartContract">
+                                    <input type="checkbox" name="web3-features[]" value="SmartContract">
                                     <span class="custom-checkbox"></span>
                                     Smart Contract Integration
                                 </label>
@@ -934,7 +972,7 @@
                         </div>
                     </div>
                     
-                    <!-- New Revenue Generation Section -->
+                    <!-- Revenue Generation Section -->
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-dollar-sign"></i></div>
@@ -943,7 +981,7 @@
                         
                         <div class="form-group">
                             <label>How do you plan to monetize your website?</label>
-                            <select id="monetization" class="form-control">
+                            <select id="monetization" name="monetization" class="form-control">
                                 <option value="">Select your main monetization strategy...</option>
                                 <option value="direct-sales">Direct Product/Service Sales</option>
                                 <option value="subscriptions">Subscription/Membership Fees</option>
@@ -958,7 +996,7 @@
                         
                         <div class="form-group">
                             <label>What's your target monthly revenue from this website?</label>
-                            <select id="target-revenue" class="form-control">
+                            <select id="target-revenue" name="target-revenue" class="form-control">
                                 <option value="">Select target revenue range...</option>
                                 <option value="under-1k">Under $1,000/month</option>
                                 <option value="1k-5k">$1,000 - $5,000/month</option>
@@ -985,7 +1023,7 @@
                         <div class="form-row">
                             <div class="form-col form-group">
                                 <label for="budget">Your approximate budget range</label>
-                                <select id="budget" class="form-control">
+                                <select id="budget" name="budget" class="form-control">
                                     <option value="">Select a budget range...</option>
                                     <option value="Under $1,000">Under $1,000</option>
                                     <option value="$1,000 - $5,000">$1,000 - $5,000</option>
@@ -998,7 +1036,7 @@
                             
                             <div class="form-col form-group">
                                 <label for="timeline">When do you want to launch the website?</label>
-                                <select id="timeline" class="form-control">
+                                <select id="timeline" name="timeline" class="form-control">
                                     <option value="">Select a timeline...</option>
                                     <option value="ASAP">As soon as possible</option>
                                     <option value="1 month">Within 1 month</option>
@@ -1019,13 +1057,18 @@
                         
                         <div class="form-group">
                             <label for="additional">Any other details or questions you'd like to add?</label>
-                            <textarea id="additional" class="form-control" placeholder="Share any additional information that might help us understand your project better..."></textarea>
+                            <textarea id="additional" name="additional" class="form-control" placeholder="Share any additional information that might help us understand your project better..."></textarea>
                         </div>
                     </div>
                     
                     <div class="form-group" style="text-align: center;">
-                        <button type="submit" class="btn btn-primary">Submit Questionnaire</button>
+                        <button type="submit" class="btn btn-primary" id="submit-btn">Submit Questionnaire</button>
                     </div>
+
+                    <!-- Form data for saving progress -->
+                    <input type="hidden" name="_subject" value="Website Project Questionnaire Submission">
+                    <input type="hidden" name="_format" value="plain">
+                    <input type="hidden" name="_next" value="">
                 </form>
             </div>
         </section>
@@ -1206,7 +1249,14 @@
             document.getElementById('share-link').setAttribute('data-link', shareLink);
             
             // Show confirmation
-            alert('Your form progress has been saved. You can copy the link to continue later.');
+            const formStatus = document.getElementById('form-status');
+            formStatus.innerHTML = 'Your form progress has been saved. You can copy the link to continue later.';
+            formStatus.className = 'form-status success';
+            formStatus.style.display = 'block';
+            
+            setTimeout(() => {
+                formStatus.style.display = 'none';
+            }, 5000);
         });
         
         // Dynamic Portfolio Preview
@@ -1218,8 +1268,8 @@
             const previewDescription = document.getElementById('preview-description');
             
             // Get selected features and styles
-            const selectedFeatures = Array.from(document.querySelectorAll('input[name="features"]:checked')).map(el => el.value);
-            const selectedStyles = Array.from(document.querySelectorAll('input[name="style"]:checked')).map(el => el.value);
+            const selectedFeatures = Array.from(document.querySelectorAll('input[name="features[]"]:checked')).map(el => el.value);
+            const selectedStyles = Array.from(document.querySelectorAll('input[name="style[]"]:checked')).map(el => el.value);
             
             if (selectedFeatures.length > 0 || selectedStyles.length > 0) {
                 // Show the preview
@@ -1523,19 +1573,28 @@
         
         // Form submission
         document.getElementById('website-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.innerHTML = '<span class="loading"></span> Submitting...';
+            submitBtn.disabled = true;
             
-            // Hide form section
-            document.querySelector('.form-section').style.display = 'none';
+            // Formspree will handle the form submission
+            // No need to prevent default as we want the form to actually submit to Formspree
             
-            // Show thank you screen
-            document.getElementById('thank-you-screen').style.display = 'block';
+            // Show a submitting message
+            const formStatus = document.getElementById('form-status');
+            formStatus.innerHTML = 'Submitting your questionnaire...';
+            formStatus.className = 'form-status';
+            formStatus.style.display = 'block';
             
-            // Scroll to top
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            // After form is submitted, Formspree will redirect to thank you page or show errors
+            // We'll handle this in a hidden iframe to avoid page reload
+            // Here we're just setting a backup in case the redirect doesn't work
+            setTimeout(() => {
+                if (submitBtn.disabled) {
+                    submitBtn.innerHTML = 'Submit Questionnaire';
+                    submitBtn.disabled = false;
+                }
+            }, 10000);
         });
         
         // Check for saved form data on load
@@ -1564,7 +1623,7 @@
             initFormAI();
             
             // Add Portfolio preview logic
-            document.querySelectorAll('input[name="features"], input[name="style"]').forEach(checkbox => {
+            document.querySelectorAll('input[name="features[]"], input[name="style[]"]').forEach(checkbox => {
                 checkbox.addEventListener('change', updatePortfolioPreview);
             });
             
@@ -1583,20 +1642,42 @@
                 const link = this.getAttribute('data-link');
                 
                 navigator.clipboard.writeText(link).then(() => {
-                    alert('Link copied to clipboard!');
+                    const formStatus = document.getElementById('form-status');
+                    formStatus.innerHTML = 'Link copied to clipboard!';
+                    formStatus.className = 'form-status success';
+                    formStatus.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        formStatus.style.display = 'none';
+                    }, 3000);
                 }).catch(err => {
                     console.error('Could not copy text: ', err);
                 });
             });
+            
+            // Handle form submission success/error from Formspree
+            if (window.location.search.includes('submitted=true')) {
+                document.querySelector('.form-section').style.display = 'none';
+                document.getElementById('thank-you-screen').style.display = 'block';
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            } else if (window.location.search.includes('error=true')) {
+                const formStatus = document.getElementById('form-status');
+                formStatus.innerHTML = 'There was an error submitting the form. Please try again.';
+                formStatus.className = 'form-status error';
+                formStatus.style.display = 'block';
+            }
         });
     </script>
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDryKYVGJE5d5FRODxMBUrbUuBVTttHwvTkeY88grvwsH9qHJ6COVF%2BLDkboEHqWXqN0kK%2FgHnZZnYZrq5GY%2F9R%2B47VSLFy%2BTc1%2BfLRCByRMI%2FhmDocSEP7B91jpV1ih2GP2q3SXe4Lf6yvnR1tWXHTE1%2B%2FkPuF1nQ4RXNRT6s4xIe71RfVg6nZ8cQvWOno8AgUtGEGoLnDTnD48APNf%2Bp0HUYBmWAGj3UJOGULrCYZoHqJ7kNjh66sL66bh2%2B6Zn1b17GfEZmTGbt0JbHCCmr4L8%2BEkVd%2F9x7Lr9anTApZH80K6E7oCP%2FsDsxSmuaiHcO2IGo5Dp3yKdfB3VWjAXHrb0ltB%2BlcauEGviuMw6snPdjHLswpOrxQ%2FhJup%2F7%2Bbh2xsrgOD%2BRFQYGzXZeR2RKRQn4OQsit1ylf0S63lJMt%2Bxw1iYomllIti%2BdZ22FmiOXXR%2Bi0o6Ux73kT%2BiSMUp09sFuhINF0OYbiUHxlD3FrQDvCBo2oqAT2hm0Wnjy%2BKmbg%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDpi7Soy%2FEvb11obB8O1qk9TfLVmliqosBbIQP9UVtrDySB7ckUsRzmjqN9MhOepONJSri6EkyNlMTmQARwlyJZEuowL8bT914R1h9bg4saaa%2FRim9iPTqE%2Fqiq9T0TOhXsDbWDqJhoS9QL9DgfMRxtygoQV%2FL5I%2FotthVZ6fgLLZy4sHBu%2FICO5%2F306kk3EldhhkuJqO3D8o2w7XW1HeGJPVaP%2B538s5S6M9KRpIsL74ZdLvx7tSXms7fSZXs5nIOy%2FHrQxV2emRRU0VwKQBzy5MbZSsPn2uMXcUKEdUuliYQ8obP%2FWZDX4Q2UGb%2FEyXoMiUcFE1EkAZwWXYC1GO3Zf119N0wZLUPCOqrIg5%2FjwkHGFomSItHRtsqwJ%2BEkk0VF5rk%2FKcyRkNvIYcC77CM2qFYj2%2FpPj4zIMx4LZ0d%2BTl6QKeWDmgE2I4Yy%2FaXOpbXNsxZEGznFtSoBJBIhYWLisEvJN8C6bZYYnzB770nIgZJ4gmYcrc%2BgXXJmyVBTq1VqI8q9SvhKev%2Fr%2BpETGksqo%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDryKYVGJE5d5FRODxMBUrbUuBVTttHwvTkeY88grvwsH9qHJ6COVF+LDkboEHqWXqN0kK/gHnZZnYZrq5GY/9R+47VSLFy+Tc1+fLRCByRMI/hmDocSEP7B91jpV1ih2GP2q3SXe4Lf6yvnR1tWXHTE1+/kPuF1nQ4RXNRT6s4xIe71RfVg6nZ8cQvWOno8AgUtGEGoLnDTnD48APNf+p0HUYBmWAGj3UJOGULrCYZoHqJ7kNjh66sL66bh2+6Zn1b17GfEZmTGbt0JbHCCmr4L8+EkVd/9x7Lr9anTApZH80K6E7oCP/sDsxSmuaiHcO2IGo5Dp3yKdfB3VWjAXHrb0ltB+lcauEGviuMw6snPdjHLswpOrxQ/hJup/7+bh2xsrgOD+RFQYGzXZeR2RKRQn4OQsit1ylf0S63lJMt+xw1iYomllIti+dZ22FmiOXXR+i0o6Ux73kT+iSMUp09sFuhINF0OYbiUHxlD3FrQDvCBo2oqAT2hm0Wnjy+Kmbg==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDpi7Soy/Evb11obB8O1qk9TfLVmliqosBbIQP9UVtrDySB7ckUsRzmjqN9MhOepONJSri6EkyNlMTmQARwlyJZEuowL8bT914R1h9bg4saaa/Rim9iPTqE/qiq9T0TOhXsDbWDqJhoS9QL9DgfMRxtygoQV/L5I/otthVZ6fgLLZy4sHBu/ICO5/306kk3EldhhkuJqO3D8o2w7XW1HeGJPVaP+538s5S6M9KRpIsL74ZdLvx7tSXms7fSZXs5nIOy/HrQxV2emRRU0VwKQBzy5MbZSsPn2uMXcUKEdUuliYQ8obP/WZDX4Q2UGb/EyXoMiUcFE1EkAZwWXYC1GO3Zf119N0wZLUPCOqrIg5/jwkHGFomSItHRtsqwJ+Ekk0VF5rk/KcyRkNvIYcC77CM2qFYj2/pPj4zIMx4LZ0d+Tl6QKeWDmgE2I4Yy/aXOpbXNsxZEGznFtSoBJBIhYWLisEvJN8C6bZYYnzB770nIgZJ4gmYcrc+gXXJmyVBTq1VqI8q9SvhKev/r+pETGksqo=";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
