@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -199,6 +200,45 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         
+        /* Fix for white dropdown menus */
+        select.form-control {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            appearance: none; /* Remove default arrow */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ffffff" viewBox="0 0 16 16"><path d="M7.247 12.64 2.451 7.158C1.885 6.513 2.345 5.5 3.204 5.5h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: calc(100% - 15px) center;
+            padding-right: 40px; /* Space for the custom arrow */
+        }
+        
+        /* Style for dropdown options */
+        select.form-control option {
+            background-color: var(--secondary);
+            color: var(--text-light);
+        }
+        
+        /* Fix for dropdown hover state */
+        select.form-control:hover, 
+        select.form-control:focus {
+            border-color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Safari-specific fixes */
+        @media screen and (-webkit-min-device-pixel-ratio:0) { 
+            select.form-control {
+                padding-right: 40px;
+            }
+        }
+        
+        /* Firefox-specific fixes */
+        @-moz-document url-prefix() {
+            select.form-control {
+                text-indent: 0.01px;
+                text-overflow: '';
+            }
+        }
+        
         textarea.form-control {
             min-height: 120px;
         }
@@ -347,6 +387,229 @@
             margin: 0 auto;
         }
         
+        /* Progress bar styling */
+        .progress-container {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            height: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Portfolio Viewer */
+        .portfolio-preview {
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            display: none;
+        }
+        
+        .portfolio-preview.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        
+        .portfolio-title {
+            font-size: 1.25rem;
+            background-color: rgba(8, 32, 50, 0.8);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .portfolio-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .portfolio-features {
+            padding: 1rem;
+            background-color: rgba(8, 32, 50, 0.6);
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+        
+        .portfolio-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Budget chart */
+        .chart-container {
+            margin: 2rem 0;
+            padding: 2rem;
+            background-color: rgba(8, 32, 50, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 400px;
+            display: none;
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        /* Save & continue button */
+        .save-continue {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--text-light);
+            margin-right: 1rem;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Form AI chat */
+        .form-ai-chat {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 400px;
+            max-width: calc(100vw - 4rem);
+            background-color: rgba(8, 32, 50, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            z-index: 1000;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .form-ai-chat.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: rgba(37, 99, 235, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chat-title {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+        }
+        
+        .chat-title i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .chat-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+        
+        .chat-body {
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .ai-message {
+            background-color: rgba(37, 99, 235, 0.2);
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        
+        .user-message {
+            background-color: rgba(255, 76, 41, 0.2);
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        .chat-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chat-input {
+            flex: 1;
+        }
+        
+        .chat-send {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .chat-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
@@ -385,6 +648,20 @@
             
             <div class="form-container">
                 <h2 class="section-title">QUESTIONNAIRE</h2>
+                
+                <div class="progress-info">
+                    <div class="progress-percentage">0% Complete</div>
+                    <div class="progress-time">Estimated time: 8 minutes</div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="form-progress"></div>
+                </div>
+                
+                <div class="save-continue">
+                    <button type="button" class="btn btn-outline" id="save-form">Save Progress</button>
+                    <a href="#" class="btn btn-outline" style="display: none;" id="share-link">Copy Link</a>
+                </div>
+                
                 <form id="website-form">
                     <div class="form-section-divider">
                         <div class="section-header">
@@ -567,6 +844,136 @@
                                 </label>
                             </div>
                         </div>
+                        
+                        <!-- Portfolio preview element -->
+                        <div class="portfolio-preview" id="portfolio-preview">
+                            <div class="portfolio-title">Preview: <span id="preview-title">Website Design</span></div>
+                            <img src="https://via.placeholder.com/800x400?text=Portfolio+Preview" class="portfolio-image" id="preview-image" alt="Portfolio Preview">
+                            <div class="portfolio-features">
+                                <div id="preview-tags"></div>
+                                <p id="preview-description">This example shows a website design with the features you've selected.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- New AI & Automation Section -->
+                    <div class="form-section-divider">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fas fa-robot"></i></div>
+                            <div class="section-label">AI & Automation Integration</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Which AI features would enhance your business? (Select all that apply)</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="ai-features" value="Chatbot">
+                                    <span class="custom-checkbox"></span>
+                                    AI Customer Support Chatbot
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="ai-features" value="Content-Generation">
+                                    <span class="custom-checkbox"></span>
+                                    Automated Content Generation
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="ai-features" value="Personalization">
+                                    <span class="custom-checkbox"></span>
+                                    User Experience Personalization
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="ai-features" value="Analytics">
+                                    <span class="custom-checkbox"></span>
+                                    Predictive Analytics Dashboard
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="ai-features" value="Automation">
+                                    <span class="custom-checkbox"></span>
+                                    Business Process Automation
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- New Web3 Section -->
+                    <div class="form-section-divider">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fas fa-link"></i></div>
+                            <div class="section-label">Web3 & Blockchain Integration</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Do you need any Web3 functionality?</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="web3-features" value="Wallet">
+                                    <span class="custom-checkbox"></span>
+                                    Wallet Connection
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="web3-features" value="NFT">
+                                    <span class="custom-checkbox"></span>
+                                    NFT Showcase/Marketplace
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="web3-features" value="Token">
+                                    <span class="custom-checkbox"></span>
+                                    Token-Gated Content
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="web3-features" value="DApp">
+                                    <span class="custom-checkbox"></span>
+                                    Decentralized Application Integration
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="web3-features" value="SmartContract">
+                                    <span class="custom-checkbox"></span>
+                                    Smart Contract Integration
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- New Revenue Generation Section -->
+                    <div class="form-section-divider">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fas fa-dollar-sign"></i></div>
+                            <div class="section-label">Revenue Generation Strategy</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>How do you plan to monetize your website?</label>
+                            <select id="monetization" class="form-control">
+                                <option value="">Select your main monetization strategy...</option>
+                                <option value="direct-sales">Direct Product/Service Sales</option>
+                                <option value="subscriptions">Subscription/Membership Fees</option>
+                                <option value="leads">Lead Generation</option>
+                                <option value="advertising">Advertising Revenue</option>
+                                <option value="affiliate">Affiliate Marketing</option>
+                                <option value="crypto">Crypto/Token Economics</option>
+                                <option value="automated">AI-Driven Automated Income System</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>What's your target monthly revenue from this website?</label>
+                            <select id="target-revenue" class="form-control">
+                                <option value="">Select target revenue range...</option>
+                                <option value="under-1k">Under $1,000/month</option>
+                                <option value="1k-5k">$1,000 - $5,000/month</option>
+                                <option value="5k-10k">$5,000 - $10,000/month</option>
+                                <option value="10k-25k">$10,000 - $25,000/month</option>
+                                <option value="25k-50k">$25,000 - $50,000/month</option>
+                                <option value="50k-plus">$50,000+/month</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Chart container for budget visualization -->
+                        <div class="chart-container" id="chart-container">
+                            <div class="chart-title">Features Available in Your Budget Range</div>
+                            <canvas id="budget-chart"></canvas>
+                        </div>
                     </div>
                     
                     <div class="form-section-divider">
@@ -633,6 +1040,27 @@
             Your information will be kept confidential and only used to help us understand your project needs.<br>
             © 2024 TNL-Media | All rights reserved.
         </footer>
+    </div>
+    
+    <!-- AI Chat Assistant -->
+    <div class="chat-toggle" id="chat-toggle">
+        <i class="fas fa-comment-alt"></i>
+    </div>
+    
+    <div class="form-ai-chat" id="form-ai-chat">
+        <div class="chat-header">
+            <div class="chat-title"><i class="fas fa-robot"></i> Form Assistant</div>
+            <button class="chat-close" id="chat-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-message ai-message">
+                Hi there! I'm your AI assistant. Need help filling out the questionnaire? Ask me anything!
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="form-control chat-input" id="chat-input" placeholder="Type your question...">
+            <button class="chat-send" id="chat-send">Send</button>
+        </div>
     </div>
     
     <script>
@@ -736,6 +1164,290 @@
             renderer.render(scene, camera);
         }
         
+        // Form progress tracking
+        function updateProgress() {
+            const requiredFields = document.querySelectorAll('[required]');
+            const totalRequired = requiredFields.length;
+            let completed = 0;
+            
+            requiredFields.forEach(field => {
+                if (field.value.trim() !== '') {
+                    completed++;
+                }
+            });
+            
+            const progress = (completed / totalRequired) * 100;
+            document.getElementById('form-progress').style.width = `${progress}%`;
+            document.querySelector('.progress-percentage').textContent = `${Math.round(progress)}% Complete`;
+            
+            // Update estimated time
+            const remainingTime = Math.round((8 * (totalRequired - completed)) / totalRequired);
+            document.querySelector('.progress-time').textContent = `Estimated time: ${remainingTime} minutes`;
+        }
+        
+        // Form autosave functionality
+        document.getElementById('save-form').addEventListener('click', function() {
+            const formData = new FormData(document.getElementById('website-form'));
+            const formDataObj = {};
+            
+            formData.forEach((value, key) => {
+                formDataObj[key] = value;
+            });
+            
+            const saveData = JSON.stringify(formDataObj);
+            const saveId = btoa(Date.now().toString()).substring(0, 8);
+            
+            localStorage.setItem(`tnl-form-${saveId}`, saveData);
+            
+            const shareLink = `${window.location.origin}${window.location.pathname}?form=${saveId}`;
+            
+            document.getElementById('share-link').style.display = 'inline-block';
+            document.getElementById('share-link').href = shareLink;
+            document.getElementById('share-link').setAttribute('data-link', shareLink);
+            
+            // Show confirmation
+            alert('Your form progress has been saved. You can copy the link to continue later.');
+        });
+        
+        // Dynamic Portfolio Preview
+        function updatePortfolioPreview() {
+            const portfolioPreview = document.getElementById('portfolio-preview');
+            const previewTitle = document.getElementById('preview-title');
+            const previewImage = document.getElementById('preview-image');
+            const previewTags = document.getElementById('preview-tags');
+            const previewDescription = document.getElementById('preview-description');
+            
+            // Get selected features and styles
+            const selectedFeatures = Array.from(document.querySelectorAll('input[name="features"]:checked')).map(el => el.value);
+            const selectedStyles = Array.from(document.querySelectorAll('input[name="style"]:checked')).map(el => el.value);
+            
+            if (selectedFeatures.length > 0 || selectedStyles.length > 0) {
+                // Show the preview
+                portfolioPreview.classList.add('active');
+                
+                // Set preview content based on selections
+                if (selectedStyles.includes('Modern & Bold')) {
+                    previewTitle.textContent = 'Modern Bold Business Site';
+                    previewImage.src = 'https://via.placeholder.com/800x400?text=Modern+Bold+Design';
+                } else if (selectedStyles.includes('Luxury & Elegant')) {
+                    previewTitle.textContent = 'Luxury Brand Site';
+                    previewImage.src = 'https://via.placeholder.com/800x400?text=Luxury+Elegant+Design';
+                } else if (selectedStyles.includes('Clean & Minimal')) {
+                    previewTitle.textContent = 'Clean Minimal Site';
+                    previewImage.src = 'https://via.placeholder.com/800x400?text=Clean+Minimal+Design';
+                } else {
+                    previewTitle.textContent = 'Custom Business Website';
+                    previewImage.src = 'https://via.placeholder.com/800x400?text=Custom+Website+Design';
+                }
+                
+                // Add feature tags
+                previewTags.innerHTML = '';
+                selectedFeatures.forEach(feature => {
+                    const tag = document.createElement('span');
+                    tag.className = 'portfolio-tag';
+                    tag.textContent = feature;
+                    previewTags.appendChild(tag);
+                });
+                
+                // Add styles as tags
+                selectedStyles.forEach(style => {
+                    const tag = document.createElement('span');
+                    tag.className = 'portfolio-tag';
+                    tag.style.backgroundColor = 'var(--accent)';
+                    tag.textContent = style;
+                    previewTags.appendChild(tag);
+                });
+                
+                // Set description
+                if (selectedFeatures.includes('Online Store')) {
+                    previewDescription.textContent = 'This e-commerce website design includes product galleries, shopping cart, and secure checkout functionality.';
+                } else if (selectedFeatures.includes('Booking System')) {
+                    previewDescription.textContent = 'This service-based website includes an integrated booking system for appointments and scheduling.';
+                } else {
+                    previewDescription.textContent = 'This custom website design showcases your brand and includes the features you\'ve selected.';
+                }
+            }
+        }
+        
+        // Budget Visualization Chart
+        function showBudgetChart() {
+            const selectedBudget = document.getElementById('budget').value;
+            const chartContainer = document.getElementById('chart-container');
+            
+            if (!selectedBudget || selectedBudget === '') {
+                chartContainer.style.display = 'none';
+                return;
+            }
+            
+            chartContainer.style.display = 'block';
+            
+            // Data for different budget ranges
+            const budgetRanges = {
+                'Under $1,000': {
+                    'Basic Website': true,
+                    'E-commerce': false,
+                    'Custom Animations': false,
+                    'AI Integration': false,
+                    'Advanced Analytics': false
+                },
+                '$1,000 - $5,000': {
+                    'Basic Website': true,
+                    'E-commerce': true,
+                    'Custom Animations': true, 
+                    'AI Integration': false,
+                    'Advanced Analytics': false
+                },
+                '$5,000 - $10,000': {
+                    'Basic Website': true,
+                    'E-commerce': true,
+                    'Custom Animations': true,
+                    'AI Integration': true,
+                    'Advanced Analytics': true
+                },
+                '$10,000 - $20,000': {
+                    'Basic Website': true,
+                    'E-commerce': true,
+                    'Custom Animations': true,
+                    'AI Integration': true,
+                    'Advanced Analytics': true
+                },
+                '$20,000+': {
+                    'Basic Website': true,
+                    'E-commerce': true,
+                    'Custom Animations': true,
+                    'AI Integration': true,
+                    'Advanced Analytics': true
+                }
+            };
+            
+            const ctx = document.getElementById('budget-chart').getContext('2d');
+            
+            // Check if a chart already exists and destroy it
+            if (window.budgetChart) {
+                window.budgetChart.destroy();
+            }
+            
+            // Create chart data based on selected budget
+            let features = Object.keys(budgetRanges[Object.keys(budgetRanges)[0]]);
+            let availabilityData = [];
+            
+            if (budgetRanges[selectedBudget]) {
+                availabilityData = features.map(feature => budgetRanges[selectedBudget][feature] ? 1 : 0);
+            }
+            
+            window.budgetChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: features,
+                    datasets: [{
+                        label: `Available in ${selectedBudget} Budget`,
+                        data: availabilityData,
+                        backgroundColor: availabilityData.map(val => val ? 'rgba(37, 99, 235, 0.7)' : 'rgba(255, 76, 41, 0.3)'),
+                        borderColor: availabilityData.map(val => val ? 'rgba(37, 99, 235, 1)' : 'rgba(255, 76, 41, 1)'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {
+                                    return value === 1 ? 'Available' : 'Not Available';
+                                },
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Form AI Chat
+        function initFormAI() {
+            const chatToggle = document.getElementById('chat-toggle');
+            const chatContainer = document.getElementById('form-ai-chat');
+            const chatClose = document.getElementById('chat-close');
+            const chatInput = document.getElementById('chat-input');
+            const chatSend = document.getElementById('chat-send');
+            const chatBody = document.getElementById('chat-body');
+            
+            // Toggle chat visibility
+            chatToggle.addEventListener('click', () => {
+                chatContainer.classList.toggle('show');
+            });
+            
+            chatClose.addEventListener('click', () => {
+                chatContainer.classList.remove('show');
+            });
+            
+            // Send message function
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (message) {
+                    // Add user message
+                    const userMessageEl = document.createElement('div');
+                    userMessageEl.className = 'chat-message user-message';
+                    userMessageEl.textContent = message;
+                    chatBody.appendChild(userMessageEl);
+                    
+                    // Clear input
+                    chatInput.value = '';
+                    
+                    // Scroll to bottom
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                    
+                    // Simple response logic (would be replaced with actual AI)
+                    setTimeout(() => {
+                        const aiMessageEl = document.createElement('div');
+                        aiMessageEl.className = 'chat-message ai-message';
+                        
+                        if (message.toLowerCase().includes('budget') || message.toLowerCase().includes('cost')) {
+                            aiMessageEl.textContent = 'Our pricing varies based on the complexity and features needed. Select a budget range in the form to see what features are typically included!';
+                        } else if (message.toLowerCase().includes('time') || message.toLowerCase().includes('timeline')) {
+                            aiMessageEl.textContent = 'Most projects take 2-4 weeks from approval to launch, depending on complexity. Larger e-commerce sites may take 6-8 weeks.';
+                        } else if (message.toLowerCase().includes('ai') || message.toLowerCase().includes('automation')) {
+                            aiMessageEl.textContent = 'Our AI integration options can automate customer support, content generation, and personalize user experiences. Check the AI & Automation section to select specific features!';
+                        } else if (message.toLowerCase().includes('web3') || message.toLowerCase().includes('blockchain')) {
+                            aiMessageEl.textContent = 'We offer various Web3 integrations including wallet connections, NFT showcases, and token-gated content. These features work best with modern, tech-focused designs.';
+                        } else {
+                            aiMessageEl.textContent = 'Thanks for your question! Fill out the form as best you can, and our team will follow up with you to discuss your specific needs in detail.';
+                        }
+                        
+                        chatBody.appendChild(aiMessageEl);
+                        chatBody.scrollTop = chatBody.scrollHeight;
+                    }, 1000);
+                }
+            }
+            
+            chatSend.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+        
         // GSAP animations for form elements
         function initAnimations() {
             gsap.registerPlugin(ScrollTrigger);
@@ -826,19 +1538,65 @@
             });
         });
         
-        // Initialize all
+        // Check for saved form data on load
         window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const formId = urlParams.get('form');
+            
+            if (formId) {
+                const savedData = localStorage.getItem(`tnl-form-${formId}`);
+                if (savedData) {
+                    const formDataObj = JSON.parse(savedData);
+                    
+                    for (const [key, value] of Object.entries(formDataObj)) {
+                        const field = document.querySelector(`[name="${key}"], #${key}`);
+                        if (field) {
+                            field.value = value;
+                        }
+                    }
+                    
+                    updateProgress();
+                }
+            }
+            
             initThree();
             initAnimations();
+            initFormAI();
+            
+            // Add Portfolio preview logic
+            document.querySelectorAll('input[name="features"], input[name="style"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updatePortfolioPreview);
+            });
+            
+            // Update progress when fields change
+            document.querySelectorAll('input, select, textarea').forEach(field => {
+                field.addEventListener('input', updateProgress);
+                field.addEventListener('change', updateProgress);
+            });
+            
+            // Initialize budget visualizer
+            document.getElementById('budget').addEventListener('change', showBudgetChart);
+            
+            // Share link copy functionality
+            document.getElementById('share-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                const link = this.getAttribute('data-link');
+                
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('Link copied to clipboard!');
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            });
         });
     </script>
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDs9JN%2FLKsaBa%2FLgy5XbkRXGoF9nbSbZKHaci3EfvVv0sy4kpmt3FIWvg8XOBUyprHzuz%2FFzmBcjLVq2Y8EYYOflrH2%2F2g%2BAP7ruKC91FxH0WYGHZX2JzH9ugR0EBdJcssUdS57FhA%2FmKzLdyWxgxChGsmcDzN%2BwbQ0W4uo5OjIDWGcLTKxOyn301GC5C%2FHdkTd8jjouhxKLPSAQPddXwQupt6Jkmy%2FnZcV3miyIkoN1apkPpMDo1bIep%2Bl1SNXDO%2FsKhO9wSwg0ziuilIoB%2BvhRINYolwnIwwxiDAU7l1IAfuN2qbQDvx2fXMHOsSIFYEfjQcLKdDHSGyVU%2F0NidfEq%2BgXBKew%2FTxpCedUi97PicMAOLTnmdn1KEyj7ssPtGOw%2BB9ssJmSiz81%2BdX3DaeYZamyOCTF90PeOybf6e6O7nV%2Fr9KV6wBqso4veCBTU%2FBIaVAZqzGcoJDFexxvZ9Ef2o5FMPrFdpCRkW0mHpcoeXQMJUYo0alFLLheP0%2FxOQQRy%2Bj4iL2NOS9heyyzGZ0O0%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDryKYVGJE5d5FRODxMBUrbUuBVTttHwvTkeY88grvwsH9qHJ6COVF%2BLDkboEHqWXqN0kK%2FgHnZZnYZrq5GY%2F9R%2B47VSLFy%2BTc1%2BfLRCByRMI%2FhmDocSEP7B91jpV1ih2GP2q3SXe4Lf6yvnR1tWXHTE1%2B%2FkPuF1nQ4RXNRT6s4xIe71RfVg6nZ8cQvWOno8AgUtGEGoLnDTnD48APNf%2Bp0HUYBmWAGj3UJOGULrCYZoHqJ7kNjh66sL66bh2%2B6Zn1b17GfEZmTGbt0JbHCCmr4L8%2BEkVd%2F9x7Lr9anTApZH80K6E7oCP%2FsDsxSmuaiHcO2IGo5Dp3yKdfB3VWjAXHrb0ltB%2BlcauEGviuMw6snPdjHLswpOrxQ%2FhJup%2F7%2Bbh2xsrgOD%2BRFQYGzXZeR2RKRQn4OQsit1ylf0S63lJMt%2Bxw1iYomllIti%2BdZ22FmiOXXR%2Bi0o6Ux73kT%2BiSMUp09sFuhINF0OYbiUHxlD3FrQDvCBo2oqAT2hm0Wnjy%2BKmbg%3D%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDs9JN/LKsaBa/Lgy5XbkRXGoF9nbSbZKHaci3EfvVv0sy4kpmt3FIWvg8XOBUyprHzuz/FzmBcjLVq2Y8EYYOflrH2/2g+AP7ruKC91FxH0WYGHZX2JzH9ugR0EBdJcssUdS57FhA/mKzLdyWxgxChGsmcDzN+wbQ0W4uo5OjIDWGcLTKxOyn301GC5C/HdkTd8jjouhxKLPSAQPddXwQupt6Jkmy/nZcV3miyIkoN1apkPpMDo1bIep+l1SNXDO/sKhO9wSwg0ziuilIoB+vhRINYolwnIwwxiDAU7l1IAfuN2qbQDvx2fXMHOsSIFYEfjQcLKdDHSGyVU/0NidfEq+gXBKew/TxpCedUi97PicMAOLTnmdn1KEyj7ssPtGOw+B9ssJmSiz81+dX3DaeYZamyOCTF90PeOybf6e6O7nV/r9KV6wBqso4veCBTU/BIaVAZqzGcoJDFexxvZ9Ef2o5FMPrFdpCRkW0mHpcoeXQMJUYo0alFLLheP0/xOQQRy+j4iL2NOS9heyyzGZ0O0=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDryKYVGJE5d5FRODxMBUrbUuBVTttHwvTkeY88grvwsH9qHJ6COVF+LDkboEHqWXqN0kK/gHnZZnYZrq5GY/9R+47VSLFy+Tc1+fLRCByRMI/hmDocSEP7B91jpV1ih2GP2q3SXe4Lf6yvnR1tWXHTE1+/kPuF1nQ4RXNRT6s4xIe71RfVg6nZ8cQvWOno8AgUtGEGoLnDTnD48APNf+p0HUYBmWAGj3UJOGULrCYZoHqJ7kNjh66sL66bh2+6Zn1b17GfEZmTGbt0JbHCCmr4L8+EkVd/9x7Lr9anTApZH80K6E7oCP/sDsxSmuaiHcO2IGo5Dp3yKdfB3VWjAXHrb0ltB+lcauEGviuMw6snPdjHLswpOrxQ/hJup/7+bh2xsrgOD+RFQYGzXZeR2RKRQn4OQsit1ylf0S63lJMt+xw1iYomllIti+dZ22FmiOXXR+i0o6Ux73kT+iSMUp09sFuhINF0OYbiUHxlD3FrQDvCBo2oqAT2hm0Wnjy+Kmbg==";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
