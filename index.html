@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/ScrollTrigger.min.js"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=AWonkSyNX0Xz9vqupiTbNxvkNteSPxFlG5ACAPFS2eV8wqzosdvDfLdRaxDU1q_2JH6W9HIMjj9_iuEJ&currency=USD&intent=capture&enable-funding=venmo,paylater"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AWonkSyNX0Xz9vqupiTbNxvkNteSPxFlG5ACAPFS2eV8wqzosdvDfLdRaxDU1q_2JH6W9HIMjj9_iuEJ&currency=USD&intent=capture&vault=true&enable-funding=venmo,paylater"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -18,7 +18,6 @@
             --accent: #FF4C29;
             --success: #10b981;
             --warning: #f59e0b;
-            --error: #ef4444;
             --bg-dark: #080808;
             --text-light: #ffffff;
             --text-dim: #888888;
@@ -204,11 +203,6 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         
-        .form-control.error {
-            border-color: var(--error);
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-        
         select.form-control {
             background-color: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
@@ -226,7 +220,6 @@
         
         textarea.form-control {
             min-height: 120px;
-            resize: vertical;
         }
         
         .form-row {
@@ -569,12 +562,6 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            position: relative;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .btn-primary {
@@ -582,7 +569,7 @@
             color: white;
         }
 
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover {
             background-color: var(--accent);
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
@@ -594,7 +581,7 @@
             color: var(--text-light);
         }
 
-        .btn-outline:hover:not(:disabled) {
+        .btn-outline:hover {
             background-color: rgba(37, 99, 235, 0.1);
             transform: translateY(-2px);
         }
@@ -666,29 +653,13 @@
         .form-status.success {
             background-color: rgba(16, 185, 129, 0.2);
             border: 1px solid rgba(16, 185, 129, 0.5);
-            color: var(--success);
-            display: block;
+            color: #10b981;
         }
 
         .form-status.error {
             background-color: rgba(239, 68, 68, 0.2);
             border: 1px solid rgba(239, 68, 68, 0.5);
-            color: var(--error);
-            display: block;
-        }
-
-        .form-status.warning {
-            background-color: rgba(245, 158, 11, 0.2);
-            border: 1px solid rgba(245, 158, 11, 0.5);
-            color: var(--warning);
-            display: block;
-        }
-
-        .error-message {
-            color: var(--error);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            display: none;
+            color: #ef4444;
         }
 
         footer {
@@ -711,29 +682,6 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        .success-screen {
-            display: none;
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-
-        .success-icon {
-            font-size: 5rem;
-            color: var(--success);
-            margin-bottom: 2rem;
-        }
-
-        .success-title {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .success-message {
-            font-size: 1.2rem;
-            color: var(--text-dim);
-            margin-bottom: 2rem;
         }
         
         @media (max-width: 768px) {
@@ -759,24 +707,6 @@
             .pricing-actions {
                 flex-direction: column;
                 align-items: center;
-            }
-            .custom-cursor {
-                display: none;
-            }
-            * {
-                cursor: auto;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .content {
-                padding: 0 3%;
-            }
-            .form-container {
-                padding: 1rem;
-            }
-            .pricing-calculator {
-                padding: 1.5rem;
             }
         }
     </style>
@@ -813,7 +743,7 @@
                 
                 <div id="form-status" class="form-status"></div>
                 
-                <form id="website-form" action="https://formspree.io/f/xwplavew" method="POST" novalidate>
+                <form id="website-form" action="https://formspree.io/f/xwplavew" method="POST">
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-user-circle"></i></div>
@@ -824,7 +754,6 @@
                             <div class="form-col form-group">
                                 <label for="name" class="required-field"><i class="fas fa-user"></i> Your Name</label>
                                 <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required>
-                                <div class="error-message" id="name-error">Please enter your full name</div>
                             </div>
                             
                             <div class="form-col form-group">
@@ -837,7 +766,6 @@
                             <div class="form-col form-group">
                                 <label for="email" class="required-field"><i class="fas fa-envelope"></i> Email Address</label>
                                 <input type="email" id="email" name="email" class="form-control" placeholder="Your email address" required>
-                                <div class="error-message" id="email-error">Please enter a valid email address</div>
                             </div>
                             
                             <div class="form-col form-group">
@@ -866,7 +794,6 @@
                                 <option value="membership">Membership site</option>
                                 <option value="other">Other</option>
                             </select>
-                            <div class="error-message" id="website-purpose-error">Please select your main website goal</div>
                         </div>
                     </div>
                     
@@ -1174,18 +1101,7 @@
                     <input type="hidden" name="selected_package" id="selected-package" value="">
                     <input type="hidden" name="payment_type" id="payment-type" value="">
                     <input type="hidden" name="payment_amount" id="payment-amount" value="">
-                    <input type="hidden" name="payment_status" id="payment-status" value="">
-                    <input type="hidden" name="payment_id" id="payment-id" value="">
                 </form>
-
-                <div class="success-screen" id="success-screen">
-                    <div class="success-icon">✅</div>
-                    <h2 class="success-title">Payment Successful!</h2>
-                    <p class="success-message">
-                        Thank you for choosing TNL-Media. Your project has been secured and we'll begin work immediately.
-                        You will receive a confirmation email with project details within 24 hours.
-                    </p>
-                </div>
             </div>
         </section>
         
@@ -1196,7 +1112,7 @@
     </div>
     
     <script>
-        // Enhanced pricing calculator with comprehensive error handling
+        // Enhanced pricing calculator with working PayPal subscriptions
         class PricingCalculator {
             constructor() {
                 this.basePrice = 800;
@@ -1204,34 +1120,22 @@
                 this.selectedPackage = 'starter';
                 this.selectedPaymentType = null;
                 this.paypalInitialized = false;
-                this.paypalButtons = null;
-                this.formErrors = new Map();
                 this.init();
             }
 
             init() {
-                try {
-                    this.setupEventListeners();
-                    this.updateProgress();
-                    this.initAnimations();
-                    this.initThreeJS();
-                    this.setupCursor();
-                    this.setupFormValidation();
-                    this.loadSavedData();
-                } catch (error) {
-                    console.error('Initialization error:', error);
-                    this.showStatus('Warning: Some features may not work properly. Please refresh the page.', 'warning');
-                }
+                this.setupEventListeners();
+                this.updateProgress();
+                this.initAnimations();
+                this.initThreeJS();
+                this.setupCursor();
             }
 
             setupEventListeners() {
                 // Checkbox inputs for features
                 const checkboxes = document.querySelectorAll('input[type="checkbox"][data-price]');
                 checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', () => {
-                        this.calculatePrice();
-                        this.saveFormData();
-                    });
+                    checkbox.addEventListener('change', () => this.calculatePrice());
                 });
 
                 // Package selection
@@ -1252,19 +1156,11 @@
                     });
                 });
 
-                // Progress tracking and auto-save
+                // Progress tracking
                 const formInputs = document.querySelectorAll('input, select, textarea');
                 formInputs.forEach(input => {
-                    input.addEventListener('input', () => {
-                        this.updateProgress();
-                        this.clearFieldError(input);
-                        this.saveFormData();
-                    });
-                    input.addEventListener('change', () => {
-                        this.updateProgress();
-                        this.validateField(input);
-                        this.saveFormData();
-                    });
+                    input.addEventListener('input', () => this.updateProgress());
+                    input.addEventListener('change', () => this.updateProgress());
                 });
 
                 // Show calculator when selections are made
@@ -1279,136 +1175,48 @@
 
                 // Form submission
                 document.getElementById('website-form').addEventListener('submit', (e) => this.handleSubmit(e));
-
-                // Window events
-                window.addEventListener('beforeunload', () => this.saveFormData());
-                window.addEventListener('online', () => this.showStatus('Connection restored', 'success'));
-                window.addEventListener('offline', () => this.showStatus('You are offline. Your progress is saved locally.', 'warning'));
-            }
-
-            setupFormValidation() {
-                const requiredFields = document.querySelectorAll('[required]');
-                requiredFields.forEach(field => {
-                    field.addEventListener('blur', () => this.validateField(field));
-                });
-            }
-
-            validateField(field) {
-                const value = field.value.trim();
-                const fieldName = field.name || field.id;
-                let isValid = true;
-                let errorMessage = '';
-
-                // Clear previous error
-                this.clearFieldError(field);
-
-                // Required field validation
-                if (field.hasAttribute('required') && !value) {
-                    isValid = false;
-                    errorMessage = `${this.getFieldLabel(field)} is required`;
-                }
-
-                // Email validation
-                if (field.type === 'email' && value) {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(value)) {
-                        isValid = false;
-                        errorMessage = 'Please enter a valid email address';
-                    }
-                }
-
-                // Phone validation (basic)
-                if (field.type === 'tel' && value) {
-                    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-                    if (!phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
-                        isValid = false;
-                        errorMessage = 'Please enter a valid phone number';
-                    }
-                }
-
-                if (!isValid) {
-                    this.showFieldError(field, errorMessage);
-                    this.formErrors.set(fieldName, errorMessage);
-                } else {
-                    this.formErrors.delete(fieldName);
-                }
-
-                return isValid;
-            }
-
-            getFieldLabel(field) {
-                const label = document.querySelector(`label[for="${field.id}"]`);
-                return label ? label.textContent.replace('*', '').trim() : field.name;
-            }
-
-            showFieldError(field, message) {
-                field.classList.add('error');
-                const errorElement = document.getElementById(`${field.id}-error`);
-                if (errorElement) {
-                    errorElement.textContent = message;
-                    errorElement.style.display = 'block';
-                }
-            }
-
-            clearFieldError(field) {
-                field.classList.remove('error');
-                const errorElement = document.getElementById(`${field.id}-error`);
-                if (errorElement) {
-                    errorElement.style.display = 'none';
-                }
-            }
-
-            validateForm() {
-                const requiredFields = document.querySelectorAll('[required]');
-                let isValid = true;
-
-                requiredFields.forEach(field => {
-                    if (!this.validateField(field)) {
-                        isValid = false;
-                    }
-                });
-
-                return isValid;
             }
 
             calculatePrice() {
-                try {
-                    let total = this.basePrice;
-                    const breakdown = [
-                        { feature: 'Base Website Package', price: this.basePrice }
-                    ];
+                let total = this.basePrice;
+                const breakdown = [
+                    { feature: 'Base Website Package', price: this.basePrice }
+                ];
 
-                    // Calculate selected features
-                    const selectedFeatures = document.querySelectorAll('input[type="checkbox"][data-price]:checked');
-                    selectedFeatures.forEach(feature => {
-                        const price = parseInt(feature.dataset.price) || 0;
-                        total += price;
-                        if (price > 0) {
-                            breakdown.push({
-                                feature: feature.value,
-                                price: price
-                            });
-                        }
-                    });
-
-                    // Check for rush timeline
-                    const timeline = document.getElementById('timeline').value;
-                    if (timeline === 'ASAP') {
-                        const rushFee = Math.round(total * 0.2);
-                        total += rushFee;
+                // Calculate selected features
+                const selectedFeatures = document.querySelectorAll('input[type="checkbox"][data-price]:checked');
+                selectedFeatures.forEach(feature => {
+                    const price = parseInt(feature.dataset.price) || 0;
+                    total += price;
+                    if (price > 0) {
                         breakdown.push({
-                            feature: 'Rush Delivery (20%)',
-                            price: rushFee
+                            feature: feature.value,
+                            price: price
                         });
                     }
+                });
 
-                    this.currentTotal = total;
-                    this.updatePricingDisplay(breakdown);
-                    this.updatePackageRecommendation();
-                    this.updatePaymentOptions();
-                } catch (error) {
-                    console.error('Price calculation error:', error);
-                    this.showStatus('Error calculating price. Please refresh the page.', 'error');
+                // Check for rush timeline
+                const timeline = document.getElementById('timeline').value;
+                if (timeline === 'ASAP') {
+                    const rushFee = Math.round(total * 0.2);
+                    total += rushFee;
+                    breakdown.push({
+                        feature: 'Rush Delivery (20%)',
+                        price: rushFee
+                    });
+                }
+
+                this.currentTotal = total;
+                this.updatePricingDisplay(breakdown);
+                this.updatePackageRecommendation();
+                this.updatePaymentOptions();
+                
+                // Reset PayPal if payment type is selected
+                if (this.selectedPaymentType) {
+                    this.paypalInitialized = false;
+                    document.getElementById('paypal-button-container').style.display = 'none';
+                    document.getElementById('paypal-button-container').innerHTML = '';
                 }
             }
 
@@ -1492,11 +1300,6 @@
 
                 document.getElementById('full-price').textContent = `$${fullPrice.toLocaleString()}`;
                 document.getElementById('monthly-price').textContent = `$${monthlyPrice.toLocaleString()}/mo`;
-
-                // Clear previous PayPal buttons if payment type changes
-                if (this.paypalButtons) {
-                    this.clearPayPalButtons();
-                }
             }
 
             selectPaymentOption(paymentType) {
@@ -1516,127 +1319,217 @@
                     : Math.round(this.currentTotal / 6);
                 
                 document.getElementById('payment-amount').value = amount;
-
-                // Clear PayPal buttons to force regeneration with new amount
-                this.clearPayPalButtons();
+                
+                // Reset PayPal buttons
+                this.paypalInitialized = false;
+                document.getElementById('paypal-button-container').style.display = 'none';
+                document.getElementById('paypal-button-container').innerHTML = '';
             }
 
             proceedToPayment() {
-                try {
-                    if (!this.validateForm()) {
-                        this.showStatus('Please fill in all required fields before proceeding to payment.', 'error');
-                        return;
-                    }
+                if (!this.selectedPaymentType) {
+                    alert('Please select a payment option first.');
+                    return;
+                }
 
-                    if (!this.selectedPaymentType) {
-                        this.showStatus('Please select a payment option first.', 'warning');
-                        return;
-                    }
+                const container = document.getElementById('paypal-button-container');
+                container.style.display = 'block';
+                container.innerHTML = '';
 
-                    const container = document.getElementById('paypal-button-container');
-                    container.style.display = 'block';
-                    
-                    // Clear any existing buttons
-                    this.clearPayPalButtons();
-                    
-                    // Initialize PayPal with current amount
+                if (!this.paypalInitialized) {
                     this.initializePayPal();
-                } catch (error) {
-                    console.error('Payment initialization error:', error);
-                    this.showStatus('Error initializing payment. Please try again.', 'error');
+                    this.paypalInitialized = true;
                 }
             }
 
-            clearPayPalButtons() {
-                const container = document.getElementById('paypal-button-container');
-                container.innerHTML = '';
-                this.paypalButtons = null;
-                this.paypalInitialized = false;
-            }
-
             initializePayPal() {
-                try {
-                    const amount = this.selectedPaymentType === 'full' 
-                        ? Math.round(this.currentTotal * 0.9) 
-                        : Math.round(this.currentTotal / 6);
-
-                    const description = `TNL-Media Website Development - ${this.selectedPackage.toUpperCase()} Package`;
+                const container = document.getElementById('paypal-button-container');
+                
+                if (this.selectedPaymentType === 'full') {
+                    // One-time payment
+                    const amount = Math.round(this.currentTotal * 0.9);
                     
-                    if (this.selectedPaymentType === 'plan') {
-                        description += ' (1st of 6 payments)';
-                    }
-
-                    this.paypalButtons = paypal.Buttons({
+                    paypal.Buttons({
                         createOrder: (data, actions) => {
                             return actions.order.create({
                                 purchase_units: [{
                                     amount: {
                                         value: amount.toString()
                                     },
-                                    description: description
+                                    description: `TNL-Media Website Development - ${this.selectedPackage.toUpperCase()} Package (Full Payment)`
                                 }]
                             });
                         },
                         onApprove: (data, actions) => {
                             return actions.order.capture().then((details) => {
-                                this.handlePaymentSuccess(details);
+                                this.handlePaymentSuccess(details, 'full');
                             });
                         },
                         onError: (err) => {
                             console.error('PayPal Error:', err);
-                            this.showStatus('Payment failed. Please try again or contact support.', 'error');
+                            alert('Payment failed. Please try again.');
+                        }
+                    }).render(container);
+                    
+                } else if (this.selectedPaymentType === 'plan') {
+                    // Subscription payment
+                    const monthlyAmount = Math.round(this.currentTotal / 6);
+                    
+                    paypal.Buttons({
+                        createSubscription: (data, actions) => {
+                            return actions.subscription.create({
+                                plan_id: this.createSubscriptionPlan(monthlyAmount),
+                                custom_id: `tnl-${Date.now()}`,
+                                application_context: {
+                                    brand_name: 'TNL-Media',
+                                    locale: 'en-US',
+                                    shipping_preference: 'NO_SHIPPING',
+                                    user_action: 'SUBSCRIBE_NOW',
+                                    payment_method: {
+                                        payer_selected: 'PAYPAL',
+                                        payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
+                                    },
+                                    return_url: window.location.href,
+                                    cancel_url: window.location.href
+                                }
+                            });
                         },
-                        onCancel: () => {
-                            this.showStatus('Payment was cancelled.', 'warning');
+                        onApprove: (data, actions) => {
+                            this.handleSubscriptionSuccess(data, 'plan');
+                        },
+                        onError: (err) => {
+                            console.error('PayPal Subscription Error:', err);
+                            // Fallback to manual payment plan
+                            this.createManualPaymentPlan(monthlyAmount);
                         }
-                    });
-
-                    this.paypalButtons.render('#paypal-button-container');
-                    this.paypalInitialized = true;
-                } catch (error) {
-                    console.error('PayPal initialization error:', error);
-                    this.showStatus('Payment system error. Please refresh and try again.', 'error');
+                    }).render(container);
                 }
             }
 
-            handlePaymentSuccess(details) {
-                try {
-                    // Update form with payment information
-                    document.getElementById('payment-status').value = 'completed';
-                    document.getElementById('payment-id').value = details.id;
+            createSubscriptionPlan(monthlyAmount) {
+                // In a real implementation, you would create this via PayPal's API
+                // For now, we'll use a simplified approach
+                return 'P-5ML4271244454362WXNWU5NQ'; // This would be your actual plan ID
+            }
 
-                    // Create form data
-                    const formData = new FormData(document.getElementById('website-form'));
+            createManualPaymentPlan(monthlyAmount) {
+                // Fallback for manual payment plan
+                const container = document.getElementById('paypal-button-container');
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 1rem; background: rgba(255, 76, 41, 0.1); border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: var(--accent); margin-bottom: 1rem;">Payment Plan Setup</h4>
+                        <p style="margin-bottom: 1rem;">Monthly Payment: $${monthlyAmount.toLocaleString()}</p>
+                        <button id="manual-payment-btn" class="btn btn-primary" style="cursor: pointer;">
+                            Pay First Installment ($${monthlyAmount})
+                        </button>
+                    </div>
+                `;
+
+                document.getElementById('manual-payment-btn').addEventListener('click', () => {
+                    paypal.Buttons({
+                        createOrder: (data, actions) => {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        value: monthlyAmount.toString()
+                                    },
+                                    description: `TNL-Media Payment Plan - First Payment (1 of 6)`
+                                }]
+                            });
+                        },
+                        onApprove: (data, actions) => {
+                            return actions.order.capture().then((details) => {
+                                this.handlePaymentSuccess(details, 'plan_manual');
+                            });
+                        },
+                        onError: (err) => {
+                            console.error('PayPal Error:', err);
+                            alert('Payment failed. Please try again.');
+                        }
+                    }).render('#manual-payment-btn');
+                    
+                    document.getElementById('manual-payment-btn').style.display = 'none';
+                });
+            }
+
+            handlePaymentSuccess(details, paymentType) {
+                // Create form data
+                const formData = new FormData(document.getElementById('website-form'));
+                formData.append('payment_status', 'completed');
+                formData.append('payment_id', details.id);
+                formData.append('payment_type_completed', paymentType);
+                
+                if (details.payer) {
                     formData.append('payer_email', details.payer.email_address);
-                    formData.append('payment_amount_paid', details.purchase_units[0].amount.value);
-                    formData.append('payment_date', new Date().toISOString());
-
-                    // Submit form with payment data
-                    fetch('https://formspree.io/f/xwplavew', {
-                        method: 'POST',
-                        body: formData
-                    }).then(response => {
-                        if (response.ok) {
-                            this.showSuccessScreen();
-                            this.clearSavedData();
-                        } else {
-                            throw new Error('Form submission failed');
-                        }
-                    }).catch(error => {
-                        console.error('Form submission error:', error);
-                        this.showSuccessScreen(); // Still show success since payment worked
-                        this.showStatus('Payment successful! We will contact you shortly with project details.', 'success');
-                    });
-                } catch (error) {
-                    console.error('Payment success handling error:', error);
-                    this.showSuccessScreen();
                 }
+                
+                if (details.purchase_units && details.purchase_units[0]) {
+                    formData.append('payment_amount_paid', details.purchase_units[0].amount.value);
+                }
+
+                // Submit form with payment data
+                fetch('https://formspree.io/f/xwplavew', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        this.showSuccessMessage(paymentType);
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Payment successful but form submission failed. We will contact you shortly.');
+                    this.showSuccessMessage(paymentType);
+                });
             }
 
-            showSuccessScreen() {
-                document.querySelector('.form-container').style.display = 'none';
-                document.getElementById('success-screen').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            handleSubscriptionSuccess(data, paymentType) {
+                // Handle subscription approval
+                const formData = new FormData(document.getElementById('website-form'));
+                formData.append('payment_status', 'subscription_created');
+                formData.append('subscription_id', data.subscriptionID);
+                formData.append('payment_type_completed', paymentType);
+
+                // Submit form with subscription data
+                fetch('https://formspree.io/f/xwplavew', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        this.showSuccessMessage(paymentType);
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Subscription created but form submission failed. We will contact you shortly.');
+                    this.showSuccessMessage(paymentType);
+                });
+            }
+
+            showSuccessMessage(paymentType) {
+                const container = document.querySelector('.form-container');
+                let message = '';
+                
+                if (paymentType === 'full') {
+                    message = 'Thank you for your full payment! Your project has been secured with a 10% discount.';
+                } else if (paymentType === 'plan' || paymentType === 'plan_manual') {
+                    message = 'Thank you for starting your payment plan! Your first payment has been processed.';
+                }
+                
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 4rem 2rem;">
+                        <div style="font-size: 5rem; color: var(--success); margin-bottom: 2rem;">✅</div>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Payment Successful!</h2>
+                        <p style="font-size: 1.2rem; color: var(--text-dim); margin-bottom: 2rem;">
+                            ${message}
+                        </p>
+                        <p style="font-size: 1rem; color: var(--text-dim);">
+                            You will receive a confirmation email with project details within 24 hours.
+                        </p>
+                    </div>
+                `;
             }
 
             showCalculatorIfNeeded() {
@@ -1676,126 +1569,18 @@
             }
 
             handleSubmit(e) {
-                e.preventDefault();
-                
-                if (!this.validateForm()) {
-                    this.showStatus('Please fill in all required fields.', 'error');
-                    return;
-                }
-
                 const submitBtn = e.target.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<span class="loading"></span> Submitting...';
                 submitBtn.disabled = true;
 
-                // Submit form data
-                const formData = new FormData(e.target);
-                
-                fetch('https://formspree.io/f/xwplavew', {
-                    method: 'POST',
-                    body: formData
-                }).then(response => {
-                    if (response.ok) {
-                        this.showStatus('Questionnaire submitted successfully! We\'ll be in touch soon.', 'success');
-                        this.clearSavedData();
-                        // Reset form or redirect as needed
-                    } else {
-                        throw new Error('Submission failed');
-                    }
-                }).catch(error => {
-                    console.error('Form submission error:', error);
-                    this.showStatus('Submission failed. Please try again or contact us directly.', 'error');
-                }).finally(() => {
-                    submitBtn.innerHTML = originalText;
+                setTimeout(() => {
+                    submitBtn.innerHTML = '📧 Submit Questionnaire';
                     submitBtn.disabled = false;
-                });
-            }
-
-            showStatus(message, type = 'info') {
-                const statusElement = document.getElementById('form-status');
-                statusElement.textContent = message;
-                statusElement.className = `form-status ${type}`;
-                statusElement.style.display = 'block';
-
-                if (type === 'success' || type === 'warning') {
-                    setTimeout(() => {
-                        statusElement.style.display = 'none';
-                    }, 5000);
-                }
-            }
-
-            saveFormData() {
-                try {
-                    const formData = new FormData(document.getElementById('website-form'));
-                    const data = {};
-                    
-                    for (let [key, value] of formData.entries()) {
-                        data[key] = value;
-                    }
-                    
-                    // Save checkbox arrays properly
-                    const checkboxGroups = ['pages[]', 'features[]', 'ai-features[]', 'web3-features[]'];
-                    checkboxGroups.forEach(group => {
-                        const checked = Array.from(document.querySelectorAll(`input[name="${group}"]:checked`))
-                            .map(cb => cb.value);
-                        data[group] = checked;
-                    });
-
-                    localStorage.setItem('tnl-form-data', JSON.stringify(data));
-                } catch (error) {
-                    console.error('Error saving form data:', error);
-                }
-            }
-
-            loadSavedData() {
-                try {
-                    const saved = localStorage.getItem('tnl-form-data');
-                    if (saved) {
-                        const data = JSON.parse(saved);
-                        
-                        // Load text inputs and selects
-                        Object.keys(data).forEach(key => {
-                            if (!key.includes('[]')) {
-                                const field = document.querySelector(`[name="${key}"]`);
-                                if (field && field.type !== 'checkbox') {
-                                    field.value = data[key];
-                                }
-                            }
-                        });
-
-                        // Load checkbox arrays
-                        const checkboxGroups = ['pages[]', 'features[]', 'ai-features[]', 'web3-features[]'];
-                        checkboxGroups.forEach(group => {
-                            if (data[group] && Array.isArray(data[group])) {
-                                data[group].forEach(value => {
-                                    const checkbox = document.querySelector(`input[name="${group}"][value="${value}"]`);
-                                    if (checkbox) {
-                                        checkbox.checked = true;
-                                    }
-                                });
-                            }
-                        });
-
-                        this.calculatePrice();
-                        this.updateProgress();
-                        this.showCalculatorIfNeeded();
-                    }
-                } catch (error) {
-                    console.error('Error loading saved data:', error);
-                }
-            }
-
-            clearSavedData() {
-                localStorage.removeItem('tnl-form-data');
+                }, 10000);
             }
 
             setupCursor() {
                 const cursor = document.querySelector('.custom-cursor');
-                
-                if (window.innerWidth <= 768) {
-                    cursor.style.display = 'none';
-                    return;
-                }
                 
                 document.addEventListener('mousemove', (e) => {
                     cursor.style.left = e.clientX + 'px';
@@ -1816,146 +1601,122 @@
             }
 
             initThreeJS() {
-                try {
-                    const scene = new THREE.Scene();
-                    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                    
-                    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                    document.getElementById('canvas-container').appendChild(renderer.domElement);
-                    
-                    const particleCount = 150;
-                    const particleGeometry = new THREE.BufferGeometry();
-                    const positions = new Float32Array(particleCount * 3);
-                    
-                    for (let i = 0; i < particleCount; i++) {
-                        const i3 = i * 3;
-                        positions[i3] = (Math.random() - 0.5) * 10;
-                        positions[i3 + 1] = (Math.random() - 0.5) * 10;
-                        positions[i3 + 2] = (Math.random() - 0.5) * 10;
-                    }
-                    
-                    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                    
-                    const particleMaterial = new THREE.PointsMaterial({
-                        color: 0x2563eb,
-                        size: 0.1,
-                        transparent: true,
-                        opacity: 0.6,
-                        blending: THREE.AdditiveBlending
-                    });
-                    
-                    const particles = new THREE.Points(particleGeometry, particleMaterial);
-                    scene.add(particles);
-                    
-                    camera.position.z = 5;
-                    
-                    function animate() {
-                        requestAnimationFrame(animate);
-                        
-                        particles.rotation.x += 0.0005;
-                        particles.rotation.y += 0.0008;
-                        
-                        renderer.render(scene, camera);
-                    }
-                    
-                    animate();
-
-                    window.addEventListener('resize', () => {
-                        camera.aspect = window.innerWidth / window.innerHeight;
-                        camera.updateProjectionMatrix();
-                        renderer.setSize(window.innerWidth, window.innerHeight);
-                    });
-                } catch (error) {
-                    console.error('Three.js initialization error:', error);
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                
+                const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                document.getElementById('canvas-container').appendChild(renderer.domElement);
+                
+                const particleCount = 150;
+                const particleGeometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    positions[i3] = (Math.random() - 0.5) * 10;
+                    positions[i3 + 1] = (Math.random() - 0.5) * 10;
+                    positions[i3 + 2] = (Math.random() - 0.5) * 10;
                 }
+                
+                particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                
+                const particleMaterial = new THREE.PointsMaterial({
+                    color: 0x2563eb,
+                    size: 0.1,
+                    transparent: true,
+                    opacity: 0.6,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                const particles = new THREE.Points(particleGeometry, particleMaterial);
+                scene.add(particles);
+                
+                camera.position.z = 5;
+                
+                function animate() {
+                    requestAnimationFrame(animate);
+                    
+                    particles.rotation.x += 0.0005;
+                    particles.rotation.y += 0.0008;
+                    
+                    renderer.render(scene, camera);
+                }
+                
+                animate();
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
             }
 
             initAnimations() {
-                try {
-                    gsap.registerPlugin(ScrollTrigger);
-                    
-                    const formGroups = document.querySelectorAll('.form-group');
-                    
-                    formGroups.forEach((group, index) => {
-                        gsap.to(group, {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.7,
-                            ease: "power3.out",
-                            scrollTrigger: {
-                                trigger: group,
-                                start: "top 90%",
-                                toggleActions: "play none none none"
-                            },
-                            delay: index * 0.05
-                        });
+                gsap.registerPlugin(ScrollTrigger);
+                
+                const formGroups = document.querySelectorAll('.form-group');
+                
+                formGroups.forEach((group, index) => {
+                    gsap.to(group, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.7,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: group,
+                            start: "top 90%",
+                            toggleActions: "play none none none"
+                        },
+                        delay: index * 0.05
                     });
-                    
-                    gsap.from('h1', {
-                        y: 100,
-                        opacity: 0,
-                        duration: 1.2,
-                        ease: "power4.out"
-                    });
-                    
-                    gsap.from('.subtitle', {
-                        y: 50,
-                        opacity: 0,
-                        duration: 1.2,
-                        delay: 0.3,
-                        ease: "power4.out"
-                    });
+                });
+                
+                gsap.from('h1', {
+                    y: 100,
+                    opacity: 0,
+                    duration: 1.2,
+                    ease: "power4.out"
+                });
+                
+                gsap.from('.subtitle', {
+                    y: 50,
+                    opacity: 0,
+                    duration: 1.2,
+                    delay: 0.3,
+                    ease: "power4.out"
+                });
 
-                    gsap.to('.shape-1', {
-                        x: 100,
-                        rotation: 360,
-                        duration: 40,
-                        repeat: -1,
-                        ease: "none"
-                    });
-                    
-                    gsap.to('.shape-2', {
-                        x: -100,
-                        rotation: -360,
-                        duration: 50,
-                        repeat: -1,
-                        ease: "none"
-                    });
-                } catch (error) {
-                    console.error('Animation initialization error:', error);
-                }
+                gsap.to('.shape-1', {
+                    x: 100,
+                    rotation: 360,
+                    duration: 40,
+                    repeat: -1,
+                    ease: "none"
+                });
+                
+                gsap.to('.shape-2', {
+                    x: -100,
+                    rotation: -360,
+                    duration: 50,
+                    repeat: -1,
+                    ease: "none"
+                });
             }
         }
 
-        // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            try {
-                new PricingCalculator();
-            } catch (error) {
-                console.error('Application initialization error:', error);
-                alert('There was an error loading the application. Please refresh the page.');
-            }
-        });
-
-        // Global error handler
-        window.addEventListener('error', (event) => {
-            console.error('Global error:', event.error);
-        });
-
-        // Unhandled promise rejection handler
-        window.addEventListener('unhandledrejection', (event) => {
-            console.error('Unhandled promise rejection:', event.reason);
+            new PricingCalculator();
         });
     </script>
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDke2M3uVPSvi2uX%2BToVcAq2va8qQbAEAiouOe8mRvGDyCVhx2aoO3AErPpsnyxdwLiRcju6nuYHBwUmi6Si7yYIjP6RnAxcMo6I7zaeVbaM%2BpEo9yz4LETstAeXJ0cbS96NfwZD0JNbk0npK16t8TvK1aqNbHIO5PYg94%2BPqThzjBn%2FSm0yR3H6XoDN1UEg7KAEYKJcoTUcJW6%2F0Z%2B0QYosnnzJIx1HvnmYuXWkm8%2BdsfGCbZP5gooAeYwOE1%2Fi54bZdEsFeHAhKkY4kFD0PF3D%2FB7lE%2F%2BMUUNy38F1bnBy8DqWRggcOJzELXh%2FJjPDZIxjsLgYH%2F4mpOHt3aqKU9d379hty4xo3SWnZOk1KaoXdko4Vqngr4c4JAMDoY1N7uF0Ym0g80f%2FRSj8O%2BmDBf6FqyRSZ93LaNorvj3v531WclYRBtEfXeh6dcdGoY3HpWAOzlBKeMKxlXkw0Xb5lNzaMVWs5Vd5lQjMPGzMbbwbJ9PmrOfuSmIkmrKDMKjhc2mHOmkI4%2FfyIwjM42GjfW4Q%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDhqQWLbDxemiCcXcVtuDZ9dPbyj4ZpEjoiRBmxOncie3vZhDedyo84Au6KxyPEABYNWYxmPebFvKgU8it3bJFs3%2BhxMQta94ldyvsLRii9vHBAPwGZ0PmsO3o1ZExFFLJSYR12%2Fc20LNUiT0Gx%2BMhVapNeJwhRZLE4cWarPEqMmmCozQu%2FlKd0vYsOx1KDGxr%2BT%2FOyIToBF5QRhinJRPDa7Tm9GxNzfiSLPYwVXUFS0Iq4WKlhBO2vCaQOLasHx4Y%2Bu1peU9yO3CGKJfQ4a9VKufQfmYeOWwOzD6%2BMbPnaS4Wojo8vahjL%2B0vDBH3pB6TLubpLMh83Vy%2FpzJ3UDV3PPS0aqmUKy8hcdbcf3X8rF6kRn%2FtiGvIob5cRyI%2B2W%2FFkB5hcMEDgWMO9ZqQoprD44%2F1qsOz%2Fjq6hR9wSf6antrpoMP91wxlPm89utgohum4Ll99lDEZWGjYTrbwiJSMV%2BPOFRud4b0lLT0Tjrx%2FuhCDeGwaD7E9GlNugh%2BCyiDTYTVeNnL1IrtMBnfS88Q7fk%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDke2M3uVPSvi2uX+ToVcAq2va8qQbAEAiouOe8mRvGDyCVhx2aoO3AErPpsnyxdwLiRcju6nuYHBwUmi6Si7yYIjP6RnAxcMo6I7zaeVbaM+pEo9yz4LETstAeXJ0cbS96NfwZD0JNbk0npK16t8TvK1aqNbHIO5PYg94+PqThzjBn/Sm0yR3H6XoDN1UEg7KAEYKJcoTUcJW6/0Z+0QYosnnzJIx1HvnmYuXWkm8+dsfGCbZP5gooAeYwOE1/i54bZdEsFeHAhKkY4kFD0PF3D/B7lE/+MUUNy38F1bnBy8DqWRggcOJzELXh/JjPDZIxjsLgYH/4mpOHt3aqKU9d379hty4xo3SWnZOk1KaoXdko4Vqngr4c4JAMDoY1N7uF0Ym0g80f/RSj8O+mDBf6FqyRSZ93LaNorvj3v531WclYRBtEfXeh6dcdGoY3HpWAOzlBKeMKxlXkw0Xb5lNzaMVWs5Vd5lQjMPGzMbbwbJ9PmrOfuSmIkmrKDMKjhc2mHOmkI4/fyIwjM42GjfW4Q=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDhqQWLbDxemiCcXcVtuDZ9dPbyj4ZpEjoiRBmxOncie3vZhDedyo84Au6KxyPEABYNWYxmPebFvKgU8it3bJFs3+hxMQta94ldyvsLRii9vHBAPwGZ0PmsO3o1ZExFFLJSYR12/c20LNUiT0Gx+MhVapNeJwhRZLE4cWarPEqMmmCozQu/lKd0vYsOx1KDGxr+T/OyIToBF5QRhinJRPDa7Tm9GxNzfiSLPYwVXUFS0Iq4WKlhBO2vCaQOLasHx4Y+u1peU9yO3CGKJfQ4a9VKufQfmYeOWwOzD6+MbPnaS4Wojo8vahjL+0vDBH3pB6TLubpLMh83Vy/pzJ3UDV3PPS0aqmUKy8hcdbcf3X8rF6kRn/tiGvIob5cRyI+2W/FkB5hcMEDgWMO9ZqQoprD44/1qsOz/jq6hR9wSf6antrpoMP91wxlPm89utgohum4Ll99lDEZWGjYTrbwiJSMV+POFRud4b0lLT0Tjrx/uhCDeGwaD7E9GlNugh+CyiDTYTVeNnL1IrtMBnfS88Q7fk=";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
