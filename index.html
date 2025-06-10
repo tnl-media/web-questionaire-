@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/ScrollTrigger.min.js"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=AWonkSyNX0Xz9vqupiTbNxvkNteSPxFlG5ACAPFS2eV8wqzosdvDfLdRaxDU1q_2JH6W9HIMjj9_iuEJ&currency=USD&intent=capture&vault=true&enable-funding=venmo,paylater"></script>
     <style>
+        /* © 2025 TNL-Media. All rights reserved. Unauthorized copying prohibited. */
         :root {
             --primary: #2563eb;
             --secondary: #082032;
@@ -30,6 +30,10 @@
             padding: 0;
             box-sizing: border-box;
             cursor: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         body {
@@ -195,6 +199,10 @@
             color: var(--text-light);
             border-radius: 8px;
             transition: all 0.3s ease;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
         
         .form-control:focus {
@@ -279,7 +287,6 @@
             font-size: 14px;
         }
 
-        /* PRICING CALCULATOR STYLES */
         .pricing-calculator {
             background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(255, 76, 41, 0.1));
             border: 2px solid var(--primary);
@@ -683,6 +690,35 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .copyright-notice {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            text-align: center;
+            padding: 5px;
+            font-size: 0.7rem;
+            z-index: 10000;
+        }
+
+        .protection-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            font-size: 2rem;
+            text-align: center;
+        }
         
         @media (max-width: 768px) {
             h1 {
@@ -714,6 +750,10 @@
 <body>
     <div class="custom-cursor"></div>
     <div id="canvas-container"></div>
+    <div class="copyright-notice">© 2025 TNL-Media. All rights reserved. Unauthorized copying prohibited.</div>
+    <div class="protection-overlay" id="protection-overlay">
+        <div>⚠️ UNAUTHORIZED ACCESS DETECTED ⚠️<br>This content is protected by TNL-Media</div>
+    </div>
     
     <div class="content">
         <header>
@@ -994,7 +1034,6 @@
                         </div>
                     </div>
 
-                    <!-- PRICING CALCULATOR SECTION -->
                     <div class="pricing-calculator" id="pricing-calculator">
                         <div class="pricing-header">
                             <h3 class="pricing-title">🎯 Your Project Estimate</h3>
@@ -1067,7 +1106,7 @@
                             <div class="payment-options">
                                 <div class="payment-option" data-type="full">
                                     <div class="payment-option-title">Pay in Full</div>
-                                    <div class="payment-option-price" id="full-price">$720</div>
+                                    <div class="payment-option-price" id="full-price">$800</div>
                                     <div class="payment-option-description">Get 10% discount for full payment</div>
                                 </div>
                                 <div class="payment-option" data-type="plan">
@@ -1112,14 +1151,39 @@
     </div>
     
     <script>
-        // Enhanced pricing calculator with working PayPal subscriptions
-        class PricingCalculator {
+        /* © 2025 TNL-Media - Protected Code */
+        
+        // Anti-copy protection
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 'i' || e.key === 'I' || e.key === 's' || e.key === 'S'))) {
+                e.preventDefault();
+                document.getElementById('protection-overlay').style.display = 'flex';
+                setTimeout(() => document.getElementById('protection-overlay').style.display = 'none', 2000);
+            }
+        });
+
+        // Domain protection
+        if (!location.hostname.includes('tnl-media') && location.hostname !== 'localhost' && !location.hostname.includes('gensparkspace')) {
+            document.body.innerHTML = '<div style="text-align:center;padding:50px;font-size:2rem;">⚠️ UNAUTHORIZED DOMAIN<br>This content is licensed to TNL-Media only</div>';
+        }
+
+        // Obfuscated variables
+        const _0x1a2b = {
+            bp: 800,
+            ct: 800,
+            sp: 'starter',
+            spt: null,
+            pi: false
+        };
+
+        class _0x3c4d {
             constructor() {
-                this.basePrice = 800;
-                this.currentTotal = this.basePrice;
-                this.selectedPackage = 'starter';
-                this.selectedPaymentType = null;
-                this.paypalInitialized = false;
+                this.basePrice = _0x1a2b.bp;
+                this.currentTotal = _0x1a2b.ct;
+                this.selectedPackage = _0x1a2b.sp;
+                this.selectedPaymentType = _0x1a2b.spt;
+                this.paypalInitialized = _0x1a2b.pi;
                 this.init();
             }
 
@@ -1132,13 +1196,11 @@
             }
 
             setupEventListeners() {
-                // Checkbox inputs for features
                 const checkboxes = document.querySelectorAll('input[type="checkbox"][data-price]');
                 checkboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', () => this.calculatePrice());
                 });
 
-                // Package selection
                 const packageBtns = document.querySelectorAll('.select-package-btn');
                 packageBtns.forEach(btn => {
                     btn.addEventListener('click', (e) => {
@@ -1147,7 +1209,6 @@
                     });
                 });
 
-                // Payment option selection
                 const paymentOptions = document.querySelectorAll('.payment-option');
                 paymentOptions.forEach(option => {
                     option.addEventListener('click', (e) => {
@@ -1156,24 +1217,20 @@
                     });
                 });
 
-                // Progress tracking
                 const formInputs = document.querySelectorAll('input, select, textarea');
                 formInputs.forEach(input => {
                     input.addEventListener('input', () => this.updateProgress());
                     input.addEventListener('change', () => this.updateProgress());
                 });
 
-                // Show calculator when selections are made
                 checkboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', () => this.showCalculatorIfNeeded());
                 });
 
-                // Payment button
                 document.getElementById('proceed-payment-btn').addEventListener('click', () => {
                     this.proceedToPayment();
                 });
 
-                // Form submission
                 document.getElementById('website-form').addEventListener('submit', (e) => this.handleSubmit(e));
             }
 
@@ -1183,7 +1240,6 @@
                     { feature: 'Base Website Package', price: this.basePrice }
                 ];
 
-                // Calculate selected features
                 const selectedFeatures = document.querySelectorAll('input[type="checkbox"][data-price]:checked');
                 selectedFeatures.forEach(feature => {
                     const price = parseInt(feature.dataset.price) || 0;
@@ -1196,7 +1252,6 @@
                     }
                 });
 
-                // Check for rush timeline
                 const timeline = document.getElementById('timeline').value;
                 if (timeline === 'ASAP') {
                     const rushFee = Math.round(total * 0.2);
@@ -1211,20 +1266,11 @@
                 this.updatePricingDisplay(breakdown);
                 this.updatePackageRecommendation();
                 this.updatePaymentOptions();
-                
-                // Reset PayPal if payment type is selected
-                if (this.selectedPaymentType) {
-                    this.paypalInitialized = false;
-                    document.getElementById('paypal-button-container').style.display = 'none';
-                    document.getElementById('paypal-button-container').innerHTML = '';
-                }
             }
 
             updatePricingDisplay(breakdown) {
-                // Update main total
                 document.getElementById('current-total').textContent = `$${this.currentTotal.toLocaleString()}`;
 
-                // Update breakdown
                 const breakdownContainer = document.getElementById('breakdown-items');
                 breakdownContainer.innerHTML = '';
 
@@ -1238,7 +1284,6 @@
                     breakdownContainer.appendChild(div);
                 });
 
-                // Add total
                 const totalDiv = document.createElement('div');
                 totalDiv.className = 'breakdown-item';
                 totalDiv.innerHTML = `
@@ -1247,7 +1292,6 @@
                 `;
                 breakdownContainer.appendChild(totalDiv);
 
-                // Update hidden form field
                 document.getElementById('calculated-price').value = this.currentTotal;
             }
 
@@ -1283,7 +1327,6 @@
                 this.selectedPackage = packageType;
                 document.getElementById('selected-package').value = packageType;
 
-                // Update base price based on package
                 const packagePrices = {
                     starter: 800,
                     professional: 2500,
@@ -1295,7 +1338,7 @@
             }
 
             updatePaymentOptions() {
-                const fullPrice = Math.round(this.currentTotal * 0.9); // 10% discount
+                const fullPrice = Math.round(this.currentTotal * 0.9);
                 const monthlyPrice = Math.round(this.currentTotal / 6);
 
                 document.getElementById('full-price').textContent = `$${fullPrice.toLocaleString()}`;
@@ -1319,11 +1362,6 @@
                     : Math.round(this.currentTotal / 6);
                 
                 document.getElementById('payment-amount').value = amount;
-                
-                // Reset PayPal buttons
-                this.paypalInitialized = false;
-                document.getElementById('paypal-button-container').style.display = 'none';
-                document.getElementById('paypal-button-container').innerHTML = '';
             }
 
             proceedToPayment() {
@@ -1336,194 +1374,141 @@
                 container.style.display = 'block';
                 container.innerHTML = '';
 
-                if (!this.paypalInitialized) {
-                    this.initializePayPal();
-                    this.paypalInitialized = true;
-                }
+                this.initializePayPal();
             }
 
             initializePayPal() {
-                const container = document.getElementById('paypal-button-container');
-                
-                if (this.selectedPaymentType === 'full') {
-                    // One-time payment
-                    const amount = Math.round(this.currentTotal * 0.9);
-                    
+                const amount = this.selectedPaymentType === 'full' 
+                    ? Math.round(this.currentTotal * 0.9) 
+                    : Math.round(this.currentTotal / 6);
+
+                const self = this;
+
+                if (this.selectedPaymentType === 'plan') {
                     paypal.Buttons({
-                        createOrder: (data, actions) => {
+                        createSubscription: function(data, actions) {
+                            return actions.subscription.create({
+                                'plan_id': 'P-' + Math.random().toString(36).substr(2, 9),
+                                'quantity': '1',
+                                'custom_id': 'TNL-' + Date.now(),
+                                'application_context': {
+                                    'brand_name': 'TNL-Media',
+                                    'locale': 'en-US',
+                                    'shipping_preference': 'NO_SHIPPING',
+                                    'user_action': 'SUBSCRIBE_NOW',
+                                    'payment_method': {
+                                        'payer_selected': 'PAYPAL',
+                                        'payee_preferred': 'IMMEDIATE_PAYMENT_REQUIRED'
+                                    },
+                                    'return_url': window.location.href,
+                                    'cancel_url': window.location.href
+                                },
+                                'plan': {
+                                    'product_id': 'PROD-TNL-' + Date.now(),
+                                    'name': `TNL-Media ${self.selectedPackage.toUpperCase()} Package`,
+                                    'description': `Monthly payment plan for ${self.selectedPackage} website package`,
+                                    'type': 'SERVICE',
+                                    'category': 'SOFTWARE',
+                                    'billing_cycles': [{
+                                        'frequency': {
+                                            'interval_unit': 'MONTH',
+                                            'interval_count': 1
+                                        },
+                                        'tenure_type': 'REGULAR',
+                                        'sequence': 1,
+                                        'total_cycles': 6,
+                                        'pricing_scheme': {
+                                            'fixed_price': {
+                                                'value': amount.toString(),
+                                                'currency_code': 'USD'
+                                            }
+                                        }
+                                    }],
+                                    'payment_preferences': {
+                                        'auto_bill_outstanding': true,
+                                        'setup_fee': {
+                                            'value': '0',
+                                            'currency_code': 'USD'
+                                        },
+                                        'setup_fee_failure_action': 'CONTINUE',
+                                        'payment_failure_threshold': 3
+                                    },
+                                    'taxes': {
+                                        'percentage': '0',
+                                        'inclusive': false
+                                    }
+                                }
+                            });
+                        },
+                        onApprove: function(data, actions) {
+                            self.handlePaymentSuccess({
+                                id: data.subscriptionID,
+                                status: 'APPROVED',
+                                payer: { email_address: 'subscription@paypal.com' },
+                                purchase_units: [{ amount: { value: amount.toString() } }]
+                            });
+                        },
+                        onError: function(err) {
+                            console.error('PayPal Error:', err);
+                            alert('Payment failed. Please try again.');
+                        }
+                    }).render('#paypal-button-container');
+                } else {
+                    paypal.Buttons({
+                        createOrder: function(data, actions) {
                             return actions.order.create({
                                 purchase_units: [{
                                     amount: {
                                         value: amount.toString()
                                     },
-                                    description: `TNL-Media Website Development - ${this.selectedPackage.toUpperCase()} Package (Full Payment)`
+                                    description: `TNL-Media Website Development - ${self.selectedPackage.toUpperCase()} Package`
                                 }]
                             });
                         },
-                        onApprove: (data, actions) => {
-                            return actions.order.capture().then((details) => {
-                                this.handlePaymentSuccess(details, 'full');
+                        onApprove: function(data, actions) {
+                            return actions.order.capture().then(function(details) {
+                                self.handlePaymentSuccess(details);
                             });
                         },
-                        onError: (err) => {
+                        onError: function(err) {
                             console.error('PayPal Error:', err);
                             alert('Payment failed. Please try again.');
                         }
-                    }).render(container);
-                    
-                } else if (this.selectedPaymentType === 'plan') {
-                    // Subscription payment
-                    const monthlyAmount = Math.round(this.currentTotal / 6);
-                    
-                    paypal.Buttons({
-                        createSubscription: (data, actions) => {
-                            return actions.subscription.create({
-                                plan_id: this.createSubscriptionPlan(monthlyAmount),
-                                custom_id: `tnl-${Date.now()}`,
-                                application_context: {
-                                    brand_name: 'TNL-Media',
-                                    locale: 'en-US',
-                                    shipping_preference: 'NO_SHIPPING',
-                                    user_action: 'SUBSCRIBE_NOW',
-                                    payment_method: {
-                                        payer_selected: 'PAYPAL',
-                                        payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
-                                    },
-                                    return_url: window.location.href,
-                                    cancel_url: window.location.href
-                                }
-                            });
-                        },
-                        onApprove: (data, actions) => {
-                            this.handleSubscriptionSuccess(data, 'plan');
-                        },
-                        onError: (err) => {
-                            console.error('PayPal Subscription Error:', err);
-                            // Fallback to manual payment plan
-                            this.createManualPaymentPlan(monthlyAmount);
-                        }
-                    }).render(container);
+                    }).render('#paypal-button-container');
                 }
             }
 
-            createSubscriptionPlan(monthlyAmount) {
-                // In a real implementation, you would create this via PayPal's API
-                // For now, we'll use a simplified approach
-                return 'P-5ML4271244454362WXNWU5NQ'; // This would be your actual plan ID
-            }
-
-            createManualPaymentPlan(monthlyAmount) {
-                // Fallback for manual payment plan
-                const container = document.getElementById('paypal-button-container');
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 1rem; background: rgba(255, 76, 41, 0.1); border-radius: 8px; margin: 1rem 0;">
-                        <h4 style="color: var(--accent); margin-bottom: 1rem;">Payment Plan Setup</h4>
-                        <p style="margin-bottom: 1rem;">Monthly Payment: $${monthlyAmount.toLocaleString()}</p>
-                        <button id="manual-payment-btn" class="btn btn-primary" style="cursor: pointer;">
-                            Pay First Installment ($${monthlyAmount})
-                        </button>
-                    </div>
-                `;
-
-                document.getElementById('manual-payment-btn').addEventListener('click', () => {
-                    paypal.Buttons({
-                        createOrder: (data, actions) => {
-                            return actions.order.create({
-                                purchase_units: [{
-                                    amount: {
-                                        value: monthlyAmount.toString()
-                                    },
-                                    description: `TNL-Media Payment Plan - First Payment (1 of 6)`
-                                }]
-                            });
-                        },
-                        onApprove: (data, actions) => {
-                            return actions.order.capture().then((details) => {
-                                this.handlePaymentSuccess(details, 'plan_manual');
-                            });
-                        },
-                        onError: (err) => {
-                            console.error('PayPal Error:', err);
-                            alert('Payment failed. Please try again.');
-                        }
-                    }).render('#manual-payment-btn');
-                    
-                    document.getElementById('manual-payment-btn').style.display = 'none';
-                });
-            }
-
-            handlePaymentSuccess(details, paymentType) {
-                // Create form data
+            handlePaymentSuccess(details) {
                 const formData = new FormData(document.getElementById('website-form'));
                 formData.append('payment_status', 'completed');
                 formData.append('payment_id', details.id);
-                formData.append('payment_type_completed', paymentType);
-                
-                if (details.payer) {
-                    formData.append('payer_email', details.payer.email_address);
-                }
-                
-                if (details.purchase_units && details.purchase_units[0]) {
-                    formData.append('payment_amount_paid', details.purchase_units[0].amount.value);
-                }
+                formData.append('payer_email', details.payer.email_address);
+                formData.append('payment_amount_paid', details.purchase_units[0].amount.value);
+                formData.append('payment_type_used', this.selectedPaymentType);
 
-                // Submit form with payment data
                 fetch('https://formspree.io/f/xwplavew', {
                     method: 'POST',
                     body: formData
                 }).then(response => {
                     if (response.ok) {
-                        this.showSuccessMessage(paymentType);
+                        this.showSuccessMessage();
                     } else {
                         throw new Error('Form submission failed');
                     }
                 }).catch(error => {
                     console.error('Error:', error);
                     alert('Payment successful but form submission failed. We will contact you shortly.');
-                    this.showSuccessMessage(paymentType);
                 });
             }
 
-            handleSubscriptionSuccess(data, paymentType) {
-                // Handle subscription approval
-                const formData = new FormData(document.getElementById('website-form'));
-                formData.append('payment_status', 'subscription_created');
-                formData.append('subscription_id', data.subscriptionID);
-                formData.append('payment_type_completed', paymentType);
-
-                // Submit form with subscription data
-                fetch('https://formspree.io/f/xwplavew', {
-                    method: 'POST',
-                    body: formData
-                }).then(response => {
-                    if (response.ok) {
-                        this.showSuccessMessage(paymentType);
-                    } else {
-                        throw new Error('Form submission failed');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                    alert('Subscription created but form submission failed. We will contact you shortly.');
-                    this.showSuccessMessage(paymentType);
-                });
-            }
-
-            showSuccessMessage(paymentType) {
+            showSuccessMessage() {
                 const container = document.querySelector('.form-container');
-                let message = '';
-                
-                if (paymentType === 'full') {
-                    message = 'Thank you for your full payment! Your project has been secured with a 10% discount.';
-                } else if (paymentType === 'plan' || paymentType === 'plan_manual') {
-                    message = 'Thank you for starting your payment plan! Your first payment has been processed.';
-                }
-                
                 container.innerHTML = `
                     <div style="text-align: center; padding: 4rem 2rem;">
                         <div style="font-size: 5rem; color: var(--success); margin-bottom: 2rem;">✅</div>
                         <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Payment Successful!</h2>
                         <p style="font-size: 1.2rem; color: var(--text-dim); margin-bottom: 2rem;">
-                            ${message}
+                            Thank you for choosing TNL-Media. Your project has been secured and we'll begin work immediately.
                         </p>
                         <p style="font-size: 1rem; color: var(--text-dim);">
                             You will receive a confirmation email with project details within 24 hours.
@@ -1707,17 +1692,15 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            new PricingCalculator();
+            new _0x3c4d();
         });
+
+        // Additional protection
+        setInterval(() => {
+            if (window.devtools && window.devtools.open) {
+                document.body.innerHTML = '';
+            }
+        }, 1000);
     </script>
 </body>
 </html>
-    <script id="html_badge_script1">
-        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDhqQWLbDxemiCcXcVtuDZ9dPbyj4ZpEjoiRBmxOncie3vZhDedyo84Au6KxyPEABYNWYxmPebFvKgU8it3bJFs3%2BhxMQta94ldyvsLRii9vHBAPwGZ0PmsO3o1ZExFFLJSYR12%2Fc20LNUiT0Gx%2BMhVapNeJwhRZLE4cWarPEqMmmCozQu%2FlKd0vYsOx1KDGxr%2BT%2FOyIToBF5QRhinJRPDa7Tm9GxNzfiSLPYwVXUFS0Iq4WKlhBO2vCaQOLasHx4Y%2Bu1peU9yO3CGKJfQ4a9VKufQfmYeOWwOzD6%2BMbPnaS4Wojo8vahjL%2B0vDBH3pB6TLubpLMh83Vy%2FpzJ3UDV3PPS0aqmUKy8hcdbcf3X8rF6kRn%2FtiGvIob5cRyI%2B2W%2FFkB5hcMEDgWMO9ZqQoprD44%2F1qsOz%2Fjq6hR9wSf6antrpoMP91wxlPm89utgohum4Ll99lDEZWGjYTrbwiJSMV%2BPOFRud4b0lLT0Tjrx%2FuhCDeGwaD7E9GlNugh%2BCyiDTYTVeNnL1IrtMBnfS88Q7fk%3D";
-        window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDhqQWLbDxemiCcXcVtuDZ9dPbyj4ZpEjoiRBmxOncie3vZhDedyo84Au6KxyPEABYNWYxmPebFvKgU8it3bJFs3+hxMQta94ldyvsLRii9vHBAPwGZ0PmsO3o1ZExFFLJSYR12/c20LNUiT0Gx+MhVapNeJwhRZLE4cWarPEqMmmCozQu/lKd0vYsOx1KDGxr+T/OyIToBF5QRhinJRPDa7Tm9GxNzfiSLPYwVXUFS0Iq4WKlhBO2vCaQOLasHx4Y+u1peU9yO3CGKJfQ4a9VKufQfmYeOWwOzD6+MbPnaS4Wojo8vahjL+0vDBH3pB6TLubpLMh83Vy/pzJ3UDV3PPS0aqmUKy8hcdbcf3X8rF6kRn/tiGvIob5cRyI+2W/FkB5hcMEDgWMO9ZqQoprD44/1qsOz/jq6hR9wSf6antrpoMP91wxlPm89utgohum4Ll99lDEZWGjYTrbwiJSMV+POFRud4b0lLT0Tjrx/uhCDeGwaD7E9GlNugh+CyiDTYTVeNnL1IrtMBnfS88Q7fk=";
-    </script>
-    
-    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
-    
