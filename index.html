@@ -4,22 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TNL-Media | Website Project Questionnaire</title>
+    <title>TNL-Media | 2025 Website Development Questionnaire & Payment System</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AWonkSyNX0Xz9vqupiTbNxvkNteSPxFlG5ACAPFS2eV8wqzosdvDfLdRaxDU1q_2JH6W9HIMjj9_iuEJ&currency=USD&intent=capture&enable-funding=venmo,paylater"></script>
     <style>
         :root {
             --primary: #2563eb;
             --secondary: #082032;
             --accent: #FF4C29;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
             --bg-dark: #080808;
             --text-light: #ffffff;
             --text-dim: #888888;
             --section-bg: rgba(255, 255, 255, 0.03);
+            --card-bg: rgba(8, 32, 50, 0.6);
         }
         
         * {
@@ -125,7 +129,7 @@
         }
         
         .form-container {
-            background-color: rgba(8, 32, 50, 0.6);
+            background-color: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 16px;
             padding: 3rem;
@@ -200,47 +204,29 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         
-        /* Fix for white dropdown menus */
+        .form-control.error {
+            border-color: var(--error);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+        
         select.form-control {
             background-color: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
-            appearance: none; /* Remove default arrow */
+            appearance: none;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ffffff" viewBox="0 0 16 16"><path d="M7.247 12.64 2.451 7.158C1.885 6.513 2.345 5.5 3.204 5.5h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>');
             background-repeat: no-repeat;
             background-position: calc(100% - 15px) center;
-            padding-right: 40px; /* Space for the custom arrow */
+            padding-right: 40px;
         }
         
-        /* Style for dropdown options */
         select.form-control option {
             background-color: var(--secondary);
             color: var(--text-light);
         }
         
-        /* Fix for dropdown hover state */
-        select.form-control:hover, 
-        select.form-control:focus {
-            border-color: var(--primary);
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        /* Safari-specific fixes */
-        @media screen and (-webkit-min-device-pixel-ratio:0) { 
-            select.form-control {
-                padding-right: 40px;
-            }
-        }
-        
-        /* Firefox-specific fixes */
-        @-moz-document url-prefix() {
-            select.form-control {
-                text-indent: 0.01px;
-                text-overflow: '';
-            }
-        }
-        
         textarea.form-control {
             min-height: 120px;
+            resize: vertical;
         }
         
         .form-row {
@@ -299,7 +285,280 @@
             color: white;
             font-size: 14px;
         }
-        
+
+        /* PRICING CALCULATOR STYLES */
+        .pricing-calculator {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(255, 76, 41, 0.1));
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin: 3rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease;
+        }
+
+        .pricing-calculator.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-subtitle {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-current-total {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin: 1rem 0;
+        }
+
+        .pricing-packages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .package-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .package-card.selected {
+            border-color: var(--accent);
+            background-color: rgba(255, 76, 41, 0.1);
+            transform: scale(1.02);
+        }
+
+        .package-card.popular::before {
+            content: '🏆 MOST POPULAR';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .package-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .package-price {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .package-card.selected .package-price {
+            color: var(--accent);
+        }
+
+        .package-description {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .package-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .package-features li {
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .package-features li i {
+            color: var(--success);
+            margin-right: 0.5rem;
+            width: 16px;
+        }
+
+        .package-features li.not-included i {
+            color: var(--text-dim);
+        }
+
+        .select-package-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .select-package-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .package-card.selected .select-package-btn {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .pricing-breakdown {
+            background-color: rgba(8, 32, 50, 0.8);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .breakdown-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: 2px solid var(--accent);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-top: 1rem;
+            padding-top: 1rem;
+        }
+
+        .breakdown-feature {
+            color: var(--text-light);
+        }
+
+        .breakdown-price {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .pricing-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .payment-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .payment-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-option {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .payment-option.selected {
+            border-color: var(--accent);
+            background-color: rgba(255, 76, 41, 0.1);
+        }
+
+        .payment-option-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .payment-option-price {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-option.selected .payment-option-price {
+            color: var(--accent);
+        }
+
+        .payment-option-description {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .paypal-buttons-container {
+            margin-top: 1.5rem;
+            min-height: 55px;
+        }
+
         .btn {
             padding: 1rem 2.5rem;
             font-size: 1rem;
@@ -310,32 +569,42 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
         }
-        
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background-color: var(--primary);
             color: white;
         }
-        
-        .btn-primary:hover {
+
+        .btn-primary:hover:not(:disabled) {
             background-color: var(--accent);
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
-        
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--text-light);
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background-color: rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
         .required-field::after {
             content: '*';
             color: var(--accent);
             margin-left: 4px;
         }
-        
-        footer {
-            text-align: center;
-            padding: 3rem 0;
-            font-size: 0.875rem;
-            color: var(--text-dim);
-        }
-        
+
         .floating-shape {
             position: absolute;
             opacity: 0.5;
@@ -362,32 +631,7 @@
             right: -200px;
             filter: blur(80px);
         }
-        
-        .thank-you-screen {
-            display: none;
-            text-align: center;
-            padding: 4rem 0;
-        }
-        
-        .thank-you-icon {
-            font-size: 5rem;
-            color: var(--accent);
-            margin-bottom: 2rem;
-        }
-        
-        .thank-you-title {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .thank-you-message {
-            font-size: 1.2rem;
-            color: var(--text-dim);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        /* Progress bar styling */
+
         .progress-container {
             width: 100%;
             background-color: rgba(255, 255, 255, 0.1);
@@ -410,207 +654,7 @@
             margin-bottom: 1rem;
             font-size: 0.875rem;
         }
-        
-        /* Portfolio Viewer */
-        .portfolio-preview {
-            margin: 2rem 0;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-            display: none;
-        }
-        
-        .portfolio-preview.active {
-            opacity: 1;
-            transform: translateY(0);
-            display: block;
-        }
-        
-        .portfolio-title {
-            font-size: 1.25rem;
-            background-color: rgba(8, 32, 50, 0.8);
-            padding: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .portfolio-image {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        .portfolio-features {
-            padding: 1rem;
-            background-color: rgba(8, 32, 50, 0.6);
-            font-size: 0.875rem;
-            color: var(--text-dim);
-        }
-        
-        .portfolio-tag {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        /* Budget chart */
-        .chart-container {
-            margin: 2rem 0;
-            padding: 2rem;
-            background-color: rgba(8, 32, 50, 0.8);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            height: 400px;
-            display: none;
-        }
-        
-        .chart-title {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        
-        /* Save & continue button */
-        .save-continue {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 2rem;
-        }
-        
-        .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--primary);
-            color: var(--text-light);
-            margin-right: 1rem;
-        }
-        
-        .btn-outline:hover {
-            background-color: rgba(37, 99, 235, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        /* Form AI chat */
-        .form-ai-chat {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 400px;
-            max-width: calc(100vw - 4rem);
-            background-color: rgba(8, 32, 50, 0.9);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            z-index: 1000;
-            transform: translateY(100%);
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-        
-        .form-ai-chat.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background-color: rgba(37, 99, 235, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .chat-title {
-            display: flex;
-            align-items: center;
-            font-weight: 700;
-        }
-        
-        .chat-title i {
-            margin-right: 0.5rem;
-            color: var(--primary);
-        }
-        
-        .chat-close {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 1.25rem;
-        }
-        
-        .chat-body {
-            padding: 1rem;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .chat-message {
-            margin-bottom: 1rem;
-            padding: 0.75rem;
-            border-radius: 8px;
-            max-width: 80%;
-        }
-        
-        .ai-message {
-            background-color: rgba(37, 99, 235, 0.2);
-            align-self: flex-start;
-            margin-right: auto;
-        }
-        
-        .user-message {
-            background-color: rgba(255, 76, 41, 0.2);
-            align-self: flex-end;
-            margin-left: auto;
-        }
-        
-        .chat-footer {
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .chat-input {
-            flex: 1;
-        }
-        
-        .chat-send {
-            padding: 0.5rem 1rem;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .chat-toggle {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            background-color: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            z-index: 1001;
-        }
 
-        /* Form Submission Status */
         .form-status {
             display: none;
             padding: 1rem;
@@ -622,13 +666,36 @@
         .form-status.success {
             background-color: rgba(16, 185, 129, 0.2);
             border: 1px solid rgba(16, 185, 129, 0.5);
-            color: #10b981;
+            color: var(--success);
+            display: block;
         }
 
         .form-status.error {
             background-color: rgba(239, 68, 68, 0.2);
             border: 1px solid rgba(239, 68, 68, 0.5);
-            color: #ef4444;
+            color: var(--error);
+            display: block;
+        }
+
+        .form-status.warning {
+            background-color: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            color: var(--warning);
+            display: block;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            font-size: 0.875rem;
+            color: var(--text-dim);
         }
 
         .loading {
@@ -645,6 +712,29 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: var(--success);
+            margin-bottom: 2rem;
+        }
+
+        .success-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
         
         @media (max-width: 768px) {
             h1 {
@@ -660,6 +750,34 @@
                 flex-direction: column;
                 gap: 1rem;
             }
+            .pricing-packages {
+                grid-template-columns: 1fr;
+            }
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+            .pricing-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .custom-cursor {
+                display: none;
+            }
+            * {
+                cursor: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                padding: 0 3%;
+            }
+            .form-container {
+                padding: 1rem;
+            }
+            .pricing-calculator {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -670,12 +788,12 @@
     <div class="content">
         <header>
             <div class="logo">TNL-<span>MEDIA</span></div>
-            <div class="menu">MENU</div>
+            <div class="menu">2025 PAYMENT SYSTEM</div>
         </header>
         
         <section class="intro">
-            <h1>WEBSITE <span>PROJECT</span></h1>
-            <p class="subtitle">Please fill out this brief form to help us understand your website needs. Our team will use this information to create a digital experience that perfectly matches your vision.</p>
+            <h1>WEBSITE <span>PROJECT 2025</span></h1>
+            <p class="subtitle">Get instant transparent pricing and secure your project with our integrated payment system. Complete your questionnaire and pay securely with PayPal or payment plans.</p>
         </section>
         
         <section class="form-section">
@@ -683,38 +801,34 @@
             <div class="floating-shape shape-2"></div>
             
             <div class="form-container">
-                <h2 class="section-title">QUESTIONNAIRE</h2>
+                <h2 class="section-title">PROJECT QUESTIONNAIRE</h2>
                 
                 <div class="progress-info">
                     <div class="progress-percentage">0% Complete</div>
-                    <div class="progress-time">Estimated time: 8 minutes</div>
+                    <div class="progress-time">Estimated time: 5 minutes</div>
                 </div>
                 <div class="progress-container">
                     <div class="progress-bar" id="form-progress"></div>
                 </div>
                 
-                <div class="save-continue">
-                    <button type="button" class="btn btn-outline" id="save-form">Save Progress</button>
-                    <a href="#" class="btn btn-outline" style="display: none;" id="share-link">Copy Link</a>
-                </div>
-                
                 <div id="form-status" class="form-status"></div>
                 
-                <form id="website-form" action="https://formspree.io/f/xwplavew" method="POST">
+                <form id="website-form" action="https://formspree.io/f/xwplavew" method="POST" novalidate>
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-user-circle"></i></div>
-                            <div class="section-label">Your Contact Information</div>
+                            <div class="section-label">Contact Information</div>
                         </div>
                         
                         <div class="form-row">
                             <div class="form-col form-group">
                                 <label for="name" class="required-field"><i class="fas fa-user"></i> Your Name</label>
                                 <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required>
+                                <div class="error-message" id="name-error">Please enter your full name</div>
                             </div>
                             
                             <div class="form-col form-group">
-                                <label for="business"><i class="fas fa-building"></i> Business/Organization Name</label>
+                                <label for="business"><i class="fas fa-building"></i> Business Name</label>
                                 <input type="text" id="business" name="business" class="form-control" placeholder="Company or organization name">
                             </div>
                         </div>
@@ -723,6 +837,7 @@
                             <div class="form-col form-group">
                                 <label for="email" class="required-field"><i class="fas fa-envelope"></i> Email Address</label>
                                 <input type="email" id="email" name="email" class="form-control" placeholder="Your email address" required>
+                                <div class="error-message" id="email-error">Please enter a valid email address</div>
                             </div>
                             
                             <div class="form-col form-group">
@@ -751,98 +866,53 @@
                                 <option value="membership">Membership site</option>
                                 <option value="other">Other</option>
                             </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="visitor-action">What's the #1 action you want visitors to take?</label>
-                            <input type="text" id="visitor-action" name="visitor-action" class="form-control" placeholder="e.g., Make a purchase, Contact you, etc.">
+                            <div class="error-message" id="website-purpose-error">Please select your main website goal</div>
                         </div>
                     </div>
                     
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-paint-brush"></i></div>
-                            <div class="section-label">Website Style & Features</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>What style should your website have? (Select all that apply)</label>
-                            <div class="checkbox-group">
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="style[]" value="Clean & Minimal">
-                                    <span class="custom-checkbox"></span>
-                                    Clean & Minimal
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="style[]" value="Modern & Bold">
-                                    <span class="custom-checkbox"></span>
-                                    Modern & Bold
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="style[]" value="Corporate & Professional">
-                                    <span class="custom-checkbox"></span>
-                                    Corporate & Professional
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="style[]" value="Playful & Fun">
-                                    <span class="custom-checkbox"></span>
-                                    Playful & Fun
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="style[]" value="Luxury & Elegant">
-                                    <span class="custom-checkbox"></span>
-                                    Luxury & Elegant
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="style[]" value="Creative & Artistic">
-                                    <span class="custom-checkbox"></span>
-                                    Creative & Artistic
-                                </label>
-                            </div>
+                            <div class="section-label">Website Features</div>
                         </div>
                         
                         <div class="form-group">
                             <label>What pages will you need? (Select all that apply)</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages[]" value="Home" checked>
+                                    <input type="checkbox" name="pages[]" value="Home" checked data-price="0">
                                     <span class="custom-checkbox"></span>
-                                    Home
+                                    Home Page
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages[]" value="About">
+                                    <input type="checkbox" name="pages[]" value="About" data-price="300">
                                     <span class="custom-checkbox"></span>
-                                    About
+                                    About Page
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages[]" value="Services">
+                                    <input type="checkbox" name="pages[]" value="Services" data-price="400">
                                     <span class="custom-checkbox"></span>
-                                    Services
+                                    Services Page
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages[]" value="Products">
+                                    <input type="checkbox" name="pages[]" value="Products" data-price="500">
                                     <span class="custom-checkbox"></span>
-                                    Products
+                                    Products Page
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages[]" value="Gallery/Portfolio">
+                                    <input type="checkbox" name="pages[]" value="Gallery" data-price="400">
                                     <span class="custom-checkbox"></span>
                                     Gallery/Portfolio
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages[]" value="Blog">
+                                    <input type="checkbox" name="pages[]" value="Blog" data-price="600">
                                     <span class="custom-checkbox"></span>
                                     Blog
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="pages[]" value="Contact">
+                                    <input type="checkbox" name="pages[]" value="Contact" data-price="200">
                                     <span class="custom-checkbox"></span>
-                                    Contact
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="pages[]" value="FAQ">
-                                    <span class="custom-checkbox"></span>
-                                    FAQ
+                                    Contact Page
                                 </label>
                             </div>
                         </div>
@@ -851,50 +921,39 @@
                             <label>Do you need any of these features? (Select all that apply)</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features[]" value="Contact Form">
+                                    <input type="checkbox" name="features[]" value="Contact Form" data-price="200">
                                     <span class="custom-checkbox"></span>
                                     Contact Form
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features[]" value="Online Store">
+                                    <input type="checkbox" name="features[]" value="Online Store" data-price="1800">
                                     <span class="custom-checkbox"></span>
-                                    Online Store
+                                    Online Store (E-commerce)
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features[]" value="Booking System">
+                                    <input type="checkbox" name="features[]" value="Booking System" data-price="1200">
                                     <span class="custom-checkbox"></span>
-                                    Booking System
+                                    Booking/Appointment System
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features[]" value="Newsletter Signup">
+                                    <input type="checkbox" name="features[]" value="Newsletter" data-price="400">
                                     <span class="custom-checkbox"></span>
                                     Newsletter Signup
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features[]" value="Social Media Integration">
+                                    <input type="checkbox" name="features[]" value="Social Media" data-price="300">
                                     <span class="custom-checkbox"></span>
                                     Social Media Integration
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="features[]" value="Photo Gallery">
+                                    <input type="checkbox" name="features[]" value="SEO" data-price="800">
                                     <span class="custom-checkbox"></span>
-                                    Photo Gallery
+                                    Advanced SEO Setup
                                 </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Portfolio preview element -->
-                        <div class="portfolio-preview" id="portfolio-preview">
-                            <div class="portfolio-title">Preview: <span id="preview-title">Website Design</span></div>
-                            <img src="https://via.placeholder.com/800x400?text=Portfolio+Preview" class="portfolio-image" id="preview-image" alt="Portfolio Preview">
-                            <div class="portfolio-features">
-                                <div id="preview-tags"></div>
-                                <p id="preview-description">This example shows a website design with the features you've selected.</p>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- AI & Automation Section -->
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-robot"></i></div>
@@ -905,27 +964,27 @@
                             <label>Which AI features would enhance your business? (Select all that apply)</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features[]" value="Chatbot">
+                                    <input type="checkbox" name="ai-features[]" value="Chatbot" data-price="1200">
                                     <span class="custom-checkbox"></span>
                                     AI Customer Support Chatbot
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features[]" value="Content-Generation">
+                                    <input type="checkbox" name="ai-features[]" value="Content Generation" data-price="1000">
                                     <span class="custom-checkbox"></span>
                                     Automated Content Generation
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features[]" value="Personalization">
+                                    <input type="checkbox" name="ai-features[]" value="Personalization" data-price="1500">
                                     <span class="custom-checkbox"></span>
                                     User Experience Personalization
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features[]" value="Analytics">
+                                    <input type="checkbox" name="ai-features[]" value="Analytics" data-price="1200">
                                     <span class="custom-checkbox"></span>
                                     Predictive Analytics Dashboard
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="ai-features[]" value="Automation">
+                                    <input type="checkbox" name="ai-features[]" value="Automation" data-price="2000">
                                     <span class="custom-checkbox"></span>
                                     Business Process Automation
                                 </label>
@@ -933,7 +992,6 @@
                         </div>
                     </div>
                     
-                    <!-- Web3 Section -->
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-link"></i></div>
@@ -941,743 +999,963 @@
                         </div>
                         
                         <div class="form-group">
-                            <label>Do you need any Web3 functionality?</label>
+                            <label>Do you need any Web3 functionality? (Select all that apply)</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features[]" value="Wallet">
+                                    <input type="checkbox" name="web3-features[]" value="Wallet" data-price="1500">
                                     <span class="custom-checkbox"></span>
                                     Wallet Connection
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features[]" value="NFT">
+                                    <input type="checkbox" name="web3-features[]" value="NFT" data-price="2500">
                                     <span class="custom-checkbox"></span>
                                     NFT Showcase/Marketplace
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features[]" value="Token">
+                                    <input type="checkbox" name="web3-features[]" value="Token" data-price="2000">
                                     <span class="custom-checkbox"></span>
                                     Token-Gated Content
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features[]" value="DApp">
+                                    <input type="checkbox" name="web3-features[]" value="DApp" data-price="3500">
                                     <span class="custom-checkbox"></span>
-                                    Decentralized Application Integration
+                                    Decentralized Application
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="web3-features[]" value="SmartContract">
+                                    <input type="checkbox" name="web3-features[]" value="Smart Contract" data-price="3000">
                                     <span class="custom-checkbox"></span>
                                     Smart Contract Integration
                                 </label>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Revenue Generation Section -->
-                    <div class="form-section-divider">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fas fa-dollar-sign"></i></div>
-                            <div class="section-label">Revenue Generation Strategy</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>How do you plan to monetize your website?</label>
-                            <select id="monetization" name="monetization" class="form-control">
-                                <option value="">Select your main monetization strategy...</option>
-                                <option value="direct-sales">Direct Product/Service Sales</option>
-                                <option value="subscriptions">Subscription/Membership Fees</option>
-                                <option value="leads">Lead Generation</option>
-                                <option value="advertising">Advertising Revenue</option>
-                                <option value="affiliate">Affiliate Marketing</option>
-                                <option value="crypto">Crypto/Token Economics</option>
-                                <option value="automated">AI-Driven Automated Income System</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>What's your target monthly revenue from this website?</label>
-                            <select id="target-revenue" name="target-revenue" class="form-control">
-                                <option value="">Select target revenue range...</option>
-                                <option value="under-1k">Under $1,000/month</option>
-                                <option value="1k-5k">$1,000 - $5,000/month</option>
-                                <option value="5k-10k">$5,000 - $10,000/month</option>
-                                <option value="10k-25k">$10,000 - $25,000/month</option>
-                                <option value="25k-50k">$25,000 - $50,000/month</option>
-                                <option value="50k-plus">$50,000+/month</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Chart container for budget visualization -->
-                        <div class="chart-container" id="chart-container">
-                            <div class="chart-title">Features Available in Your Budget Range</div>
-                            <canvas id="budget-chart"></canvas>
-                        </div>
-                    </div>
-                    
+
                     <div class="form-section-divider">
                         <div class="section-header">
                             <div class="section-icon"><i class="fas fa-calendar-alt"></i></div>
-                            <div class="section-label">Budget & Timeline</div>
+                            <div class="section-label">Timeline & Additional Info</div>
                         </div>
                         
                         <div class="form-row">
                             <div class="form-col form-group">
-                                <label for="budget">Your approximate budget range</label>
-                                <select id="budget" name="budget" class="form-control">
-                                    <option value="">Select a budget range...</option>
-                                    <option value="Under $1,000">Under $1,000</option>
-                                    <option value="$1,000 - $5,000">$1,000 - $5,000</option>
-                                    <option value="$5,000 - $10,000">$5,000 - $10,000</option>
-                                    <option value="$10,000 - $20,000">$10,000 - $20,000</option>
-                                    <option value="$20,000+">$20,000+</option>
-                                    <option value="Not sure yet">Not sure yet</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-col form-group">
-                                <label for="timeline">When do you want to launch the website?</label>
+                                <label for="timeline">When do you want to launch?</label>
                                 <select id="timeline" name="timeline" class="form-control">
-                                    <option value="">Select a timeline...</option>
-                                    <option value="ASAP">As soon as possible</option>
+                                    <option value="">Select timeline...</option>
+                                    <option value="ASAP">As soon as possible (+20% rush fee)</option>
                                     <option value="1 month">Within 1 month</option>
                                     <option value="2-3 months">Within 2-3 months</option>
                                     <option value="3-6 months">Within 3-6 months</option>
                                     <option value="6+ months">6+ months from now</option>
-                                    <option value="Not sure yet">Not sure yet</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-col form-group">
+                                <label for="budget-range">Your budget range</label>
+                                <select id="budget-range" name="budget-range" class="form-control">
+                                    <option value="">Select budget...</option>
+                                    <option value="Under $2,500">Under $2,500</option>
+                                    <option value="$2,500 - $6,000">$2,500 - $6,000</option>
+                                    <option value="$6,000 - $12,000">$6,000 - $12,000</option>
+                                    <option value="$12,000+">$12,000+</option>
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-section-divider">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fas fa-comment-alt"></i></div>
-                            <div class="section-label">Anything Else?</div>
-                        </div>
                         
                         <div class="form-group">
-                            <label for="additional">Any other details or questions you'd like to add?</label>
-                            <textarea id="additional" name="additional" class="form-control" placeholder="Share any additional information that might help us understand your project better..."></textarea>
+                            <label for="additional">Additional requirements or questions?</label>
+                            <textarea id="additional" name="additional" class="form-control" placeholder="Tell us about any specific requirements, design preferences, or questions you have..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- PRICING CALCULATOR SECTION -->
+                    <div class="pricing-calculator" id="pricing-calculator">
+                        <div class="pricing-header">
+                            <h3 class="pricing-title">🎯 Your Project Estimate</h3>
+                            <p class="pricing-subtitle">Based on your selections, here's your transparent 2025 pricing</p>
+                            <div class="pricing-current-total" id="current-total">$800</div>
+                        </div>
+
+                        <div class="pricing-packages">
+                            <div class="package-card" data-package="starter">
+                                <div class="package-name">Starter</div>
+                                <div class="package-price">$800 - $2,500</div>
+                                <div class="package-description">Perfect for small businesses and startups</div>
+                                <ul class="package-features">
+                                    <li><i class="fas fa-check"></i> Up to 5 pages</li>
+                                    <li><i class="fas fa-check"></i> Mobile responsive design</li>
+                                    <li><i class="fas fa-check"></i> Basic SEO setup</li>
+                                    <li><i class="fas fa-check"></i> Contact forms</li>
+                                    <li><i class="fas fa-check"></i> 30 days support</li>
+                                    <li class="not-included"><i class="fas fa-times"></i> E-commerce</li>
+                                    <li class="not-included"><i class="fas fa-times"></i> AI features</li>
+                                </ul>
+                                <button type="button" class="select-package-btn" data-package="starter">Select Starter</button>
+                            </div>
+
+                            <div class="package-card popular" data-package="professional">
+                                <div class="package-name">Professional</div>
+                                <div class="package-price">$2,500 - $6,000</div>
+                                <div class="package-description">Most popular choice for growing businesses</div>
+                                <ul class="package-features">
+                                    <li><i class="fas fa-check"></i> Up to 10 pages</li>
+                                    <li><i class="fas fa-check"></i> Advanced design & animations</li>
+                                    <li><i class="fas fa-check"></i> E-commerce capability</li>
+                                    <li><i class="fas fa-check"></i> Basic AI integration</li>
+                                    <li><i class="fas fa-check"></i> Advanced SEO</li>
+                                    <li><i class="fas fa-check"></i> 90 days support</li>
+                                    <li class="not-included"><i class="fas fa-times"></i> Web3 features</li>
+                                </ul>
+                                <button type="button" class="select-package-btn" data-package="professional">Select Professional</button>
+                            </div>
+
+                            <div class="package-card" data-package="enterprise">
+                                <div class="package-name">Enterprise</div>
+                                <div class="package-price">$6,000 - $12,000+</div>
+                                <div class="package-description">Full-scale solution with cutting-edge technology</div>
+                                <ul class="package-features">
+                                    <li><i class="fas fa-check"></i> Unlimited pages</li>
+                                    <li><i class="fas fa-check"></i> Custom functionality</li>
+                                    <li><i class="fas fa-check"></i> Full AI & automation</li>
+                                    <li><i class="fas fa-check"></i> Web3 integration</li>
+                                    <li><i class="fas fa-check"></i> Priority support</li>
+                                    <li><i class="fas fa-check"></i> 1 year maintenance</li>
+                                    <li><i class="fas fa-check"></i> Dedicated account manager</li>
+                                </ul>
+                                <button type="button" class="select-package-btn" data-package="enterprise">Select Enterprise</button>
+                            </div>
+                        </div>
+
+                        <div class="pricing-breakdown">
+                            <h4 class="breakdown-title">💰 Cost Breakdown</h4>
+                            <div id="breakdown-items">
+                                <div class="breakdown-item">
+                                    <span class="breakdown-feature">Base Website Package</span>
+                                    <span class="breakdown-price" id="base-price">$800</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-section">
+                            <h4 class="payment-title">💳 Secure Payment Options</h4>
+                            <div class="payment-options">
+                                <div class="payment-option" data-type="full">
+                                    <div class="payment-option-title">Pay in Full</div>
+                                    <div class="payment-option-price" id="full-price">$720</div>
+                                    <div class="payment-option-description">Get 10% discount for full payment</div>
+                                </div>
+                                <div class="payment-option" data-type="plan">
+                                    <div class="payment-option-title">Payment Plan</div>
+                                    <div class="payment-option-price" id="monthly-price">$133/mo</div>
+                                    <div class="payment-option-description">6 monthly payments (no interest)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="paypal-buttons-container" id="paypal-button-container" style="display: none;"></div>
+                        </div>
+
+                        <div class="pricing-actions">
+                            <button type="button" class="btn btn-primary" id="proceed-payment-btn">
+                                💳 Proceed to Payment
+                            </button>
+                            <button type="submit" class="btn btn-outline" id="submit-questionnaire-btn">
+                                📧 Submit Questionnaire
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="form-group" style="text-align: center;">
-                        <button type="submit" class="btn btn-primary" id="submit-btn">Submit Questionnaire</button>
+                    <div class="form-group" style="text-align: center; display: none;" id="fallback-submit">
+                        <button type="submit" class="btn btn-primary">
+                            📧 Submit Questionnaire
+                        </button>
                     </div>
 
-                    <!-- Form data for saving progress -->
-                    <input type="hidden" name="_subject" value="Website Project Questionnaire Submission">
-                    <input type="hidden" name="_format" value="plain">
-                    <input type="hidden" name="_next" value="">
+                    <input type="hidden" name="_subject" value="TNL-Media 2025 Website Project Quote Request">
+                    <input type="hidden" name="calculated_price" id="calculated-price" value="">
+                    <input type="hidden" name="selected_package" id="selected-package" value="">
+                    <input type="hidden" name="payment_type" id="payment-type" value="">
+                    <input type="hidden" name="payment_amount" id="payment-amount" value="">
+                    <input type="hidden" name="payment_status" id="payment-status" value="">
+                    <input type="hidden" name="payment_id" id="payment-id" value="">
                 </form>
+
+                <div class="success-screen" id="success-screen">
+                    <div class="success-icon">✅</div>
+                    <h2 class="success-title">Payment Successful!</h2>
+                    <p class="success-message">
+                        Thank you for choosing TNL-Media. Your project has been secured and we'll begin work immediately.
+                        You will receive a confirmation email with project details within 24 hours.
+                    </p>
+                </div>
             </div>
         </section>
         
-        <div class="thank-you-screen" id="thank-you-screen">
-            <div class="thank-you-icon"><i class="fas fa-check-circle"></i></div>
-            <h2 class="thank-you-title">Thank You!</h2>
-            <p class="thank-you-message">Your questionnaire has been submitted successfully. We'll be in touch soon! Your information will be kept confidential and only used to help us understand your project needs.</p>
-        </div>
-        
         <footer>
-            Your information will be kept confidential and only used to help us understand your project needs.<br>
-            © 2024 TNL-Media | All rights reserved.
+            🔒 Secure payment processing by PayPal. Your information is encrypted and protected.<br>
+            © 2025 TNL-Media | Elite Website Development | All rights reserved.
         </footer>
     </div>
     
-    <!-- AI Chat Assistant -->
-    <div class="chat-toggle" id="chat-toggle">
-        <i class="fas fa-comment-alt"></i>
-    </div>
-    
-    <div class="form-ai-chat" id="form-ai-chat">
-        <div class="chat-header">
-            <div class="chat-title"><i class="fas fa-robot"></i> Form Assistant</div>
-            <button class="chat-close" id="chat-close"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="chat-body" id="chat-body">
-            <div class="chat-message ai-message">
-                Hi there! I'm your AI assistant. Need help filling out the questionnaire? Ask me anything!
-            </div>
-        </div>
-        <div class="chat-footer">
-            <input type="text" class="form-control chat-input" id="chat-input" placeholder="Type your question...">
-            <button class="chat-send" id="chat-send">Send</button>
-        </div>
-    </div>
-    
     <script>
-        // Custom cursor
-        const cursor = document.querySelector('.custom-cursor');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
-        
-        const hoverElements = document.querySelectorAll('button, input, textarea, select, .checkbox-item, a');
-        
-        hoverElements.forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursor.classList.add('hover');
-            });
-            
-            element.addEventListener('mouseleave', () => {
-                cursor.classList.remove('hover');
-            });
-        });
-        
-        // Three.js WebGL Background
-        let scene, camera, renderer;
-        let particles;
-        
-        function initThree() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            
-            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
-            
-            // Create particles
-            const particleCount = 200;
-            const particleGeometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(particleCount * 3);
-            const scales = new Float32Array(particleCount);
-            
-            for (let i = 0; i < particleCount; i++) {
-                const i3 = i * 3;
-                positions[i3] = (Math.random() - 0.5) * 10;
-                positions[i3 + 1] = (Math.random() - 0.5) * 10;
-                positions[i3 + 2] = (Math.random() - 0.5) * 10;
-                scales[i] = Math.random() * 0.5 + 0.1;
+        // Enhanced pricing calculator with comprehensive error handling
+        class PricingCalculator {
+            constructor() {
+                this.basePrice = 800;
+                this.currentTotal = this.basePrice;
+                this.selectedPackage = 'starter';
+                this.selectedPaymentType = null;
+                this.paypalInitialized = false;
+                this.paypalButtons = null;
+                this.formErrors = new Map();
+                this.init();
             }
-            
-            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            particleGeometry.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
-            
-            const particleMaterial = new THREE.PointsMaterial({
-                color: 0x2563eb,
-                size: 0.1,
-                transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending
-            });
-            
-            particles = new THREE.Points(particleGeometry, particleMaterial);
-            scene.add(particles);
-            
-            camera.position.z = 5;
-            
-            window.addEventListener('resize', onWindowResize);
-            
-            animate();
-        }
-        
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-        
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            if (particles) {
-                particles.rotation.x += 0.0003;
-                particles.rotation.y += 0.0005;
-                
-                const time = Date.now() * 0.0005;
-                const positions = particles.geometry.attributes.position.array;
-                
-                for (let i = 0; i < positions.length; i += 3) {
-                    const x = positions[i];
-                    const y = positions[i + 1];
-                    const z = positions[i + 2];
-                    
-                    // Apply some subtle movement
-                    positions[i] = x + Math.sin(time + x) * 0.01;
-                    positions[i + 1] = y + Math.cos(time + y) * 0.01;
+
+            init() {
+                try {
+                    this.setupEventListeners();
+                    this.updateProgress();
+                    this.initAnimations();
+                    this.initThreeJS();
+                    this.setupCursor();
+                    this.setupFormValidation();
+                    this.loadSavedData();
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                    this.showStatus('Warning: Some features may not work properly. Please refresh the page.', 'warning');
                 }
-                
-                particles.geometry.attributes.position.needsUpdate = true;
             }
-            
-            renderer.render(scene, camera);
-        }
-        
-        // Form progress tracking
-        function updateProgress() {
-            const requiredFields = document.querySelectorAll('[required]');
-            const totalRequired = requiredFields.length;
-            let completed = 0;
-            
-            requiredFields.forEach(field => {
-                if (field.value.trim() !== '') {
-                    completed++;
-                }
-            });
-            
-            const progress = (completed / totalRequired) * 100;
-            document.getElementById('form-progress').style.width = `${progress}%`;
-            document.querySelector('.progress-percentage').textContent = `${Math.round(progress)}% Complete`;
-            
-            // Update estimated time
-            const remainingTime = Math.round((8 * (totalRequired - completed)) / totalRequired);
-            document.querySelector('.progress-time').textContent = `Estimated time: ${remainingTime} minutes`;
-        }
-        
-        // Form autosave functionality
-        document.getElementById('save-form').addEventListener('click', function() {
-            const formData = new FormData(document.getElementById('website-form'));
-            const formDataObj = {};
-            
-            formData.forEach((value, key) => {
-                formDataObj[key] = value;
-            });
-            
-            const saveData = JSON.stringify(formDataObj);
-            const saveId = btoa(Date.now().toString()).substring(0, 8);
-            
-            localStorage.setItem(`tnl-form-${saveId}`, saveData);
-            
-            const shareLink = `${window.location.origin}${window.location.pathname}?form=${saveId}`;
-            
-            document.getElementById('share-link').style.display = 'inline-block';
-            document.getElementById('share-link').href = shareLink;
-            document.getElementById('share-link').setAttribute('data-link', shareLink);
-            
-            // Show confirmation
-            const formStatus = document.getElementById('form-status');
-            formStatus.innerHTML = 'Your form progress has been saved. You can copy the link to continue later.';
-            formStatus.className = 'form-status success';
-            formStatus.style.display = 'block';
-            
-            setTimeout(() => {
-                formStatus.style.display = 'none';
-            }, 5000);
-        });
-        
-        // Dynamic Portfolio Preview
-        function updatePortfolioPreview() {
-            const portfolioPreview = document.getElementById('portfolio-preview');
-            const previewTitle = document.getElementById('preview-title');
-            const previewImage = document.getElementById('preview-image');
-            const previewTags = document.getElementById('preview-tags');
-            const previewDescription = document.getElementById('preview-description');
-            
-            // Get selected features and styles
-            const selectedFeatures = Array.from(document.querySelectorAll('input[name="features[]"]:checked')).map(el => el.value);
-            const selectedStyles = Array.from(document.querySelectorAll('input[name="style[]"]:checked')).map(el => el.value);
-            
-            if (selectedFeatures.length > 0 || selectedStyles.length > 0) {
-                // Show the preview
-                portfolioPreview.classList.add('active');
-                
-                // Set preview content based on selections
-                if (selectedStyles.includes('Modern & Bold')) {
-                    previewTitle.textContent = 'Modern Bold Business Site';
-                    previewImage.src = 'https://via.placeholder.com/800x400?text=Modern+Bold+Design';
-                } else if (selectedStyles.includes('Luxury & Elegant')) {
-                    previewTitle.textContent = 'Luxury Brand Site';
-                    previewImage.src = 'https://via.placeholder.com/800x400?text=Luxury+Elegant+Design';
-                } else if (selectedStyles.includes('Clean & Minimal')) {
-                    previewTitle.textContent = 'Clean Minimal Site';
-                    previewImage.src = 'https://via.placeholder.com/800x400?text=Clean+Minimal+Design';
-                } else {
-                    previewTitle.textContent = 'Custom Business Website';
-                    previewImage.src = 'https://via.placeholder.com/800x400?text=Custom+Website+Design';
-                }
-                
-                // Add feature tags
-                previewTags.innerHTML = '';
-                selectedFeatures.forEach(feature => {
-                    const tag = document.createElement('span');
-                    tag.className = 'portfolio-tag';
-                    tag.textContent = feature;
-                    previewTags.appendChild(tag);
+
+            setupEventListeners() {
+                // Checkbox inputs for features
+                const checkboxes = document.querySelectorAll('input[type="checkbox"][data-price]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        this.calculatePrice();
+                        this.saveFormData();
+                    });
                 });
-                
-                // Add styles as tags
-                selectedStyles.forEach(style => {
-                    const tag = document.createElement('span');
-                    tag.className = 'portfolio-tag';
-                    tag.style.backgroundColor = 'var(--accent)';
-                    tag.textContent = style;
-                    previewTags.appendChild(tag);
+
+                // Package selection
+                const packageBtns = document.querySelectorAll('.select-package-btn');
+                packageBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const packageType = e.target.dataset.package;
+                        this.selectPackage(packageType);
+                    });
                 });
-                
-                // Set description
-                if (selectedFeatures.includes('Online Store')) {
-                    previewDescription.textContent = 'This e-commerce website design includes product galleries, shopping cart, and secure checkout functionality.';
-                } else if (selectedFeatures.includes('Booking System')) {
-                    previewDescription.textContent = 'This service-based website includes an integrated booking system for appointments and scheduling.';
+
+                // Payment option selection
+                const paymentOptions = document.querySelectorAll('.payment-option');
+                paymentOptions.forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const paymentType = option.dataset.type;
+                        this.selectPaymentOption(paymentType);
+                    });
+                });
+
+                // Progress tracking and auto-save
+                const formInputs = document.querySelectorAll('input, select, textarea');
+                formInputs.forEach(input => {
+                    input.addEventListener('input', () => {
+                        this.updateProgress();
+                        this.clearFieldError(input);
+                        this.saveFormData();
+                    });
+                    input.addEventListener('change', () => {
+                        this.updateProgress();
+                        this.validateField(input);
+                        this.saveFormData();
+                    });
+                });
+
+                // Show calculator when selections are made
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => this.showCalculatorIfNeeded());
+                });
+
+                // Payment button
+                document.getElementById('proceed-payment-btn').addEventListener('click', () => {
+                    this.proceedToPayment();
+                });
+
+                // Form submission
+                document.getElementById('website-form').addEventListener('submit', (e) => this.handleSubmit(e));
+
+                // Window events
+                window.addEventListener('beforeunload', () => this.saveFormData());
+                window.addEventListener('online', () => this.showStatus('Connection restored', 'success'));
+                window.addEventListener('offline', () => this.showStatus('You are offline. Your progress is saved locally.', 'warning'));
+            }
+
+            setupFormValidation() {
+                const requiredFields = document.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    field.addEventListener('blur', () => this.validateField(field));
+                });
+            }
+
+            validateField(field) {
+                const value = field.value.trim();
+                const fieldName = field.name || field.id;
+                let isValid = true;
+                let errorMessage = '';
+
+                // Clear previous error
+                this.clearFieldError(field);
+
+                // Required field validation
+                if (field.hasAttribute('required') && !value) {
+                    isValid = false;
+                    errorMessage = `${this.getFieldLabel(field)} is required`;
+                }
+
+                // Email validation
+                if (field.type === 'email' && value) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(value)) {
+                        isValid = false;
+                        errorMessage = 'Please enter a valid email address';
+                    }
+                }
+
+                // Phone validation (basic)
+                if (field.type === 'tel' && value) {
+                    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                    if (!phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
+                        isValid = false;
+                        errorMessage = 'Please enter a valid phone number';
+                    }
+                }
+
+                if (!isValid) {
+                    this.showFieldError(field, errorMessage);
+                    this.formErrors.set(fieldName, errorMessage);
                 } else {
-                    previewDescription.textContent = 'This custom website design showcases your brand and includes the features you\'ve selected.';
+                    this.formErrors.delete(fieldName);
+                }
+
+                return isValid;
+            }
+
+            getFieldLabel(field) {
+                const label = document.querySelector(`label[for="${field.id}"]`);
+                return label ? label.textContent.replace('*', '').trim() : field.name;
+            }
+
+            showFieldError(field, message) {
+                field.classList.add('error');
+                const errorElement = document.getElementById(`${field.id}-error`);
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
                 }
             }
-        }
-        
-        // Budget Visualization Chart
-        function showBudgetChart() {
-            const selectedBudget = document.getElementById('budget').value;
-            const chartContainer = document.getElementById('chart-container');
-            
-            if (!selectedBudget || selectedBudget === '') {
-                chartContainer.style.display = 'none';
-                return;
-            }
-            
-            chartContainer.style.display = 'block';
-            
-            // Data for different budget ranges
-            const budgetRanges = {
-                'Under $1,000': {
-                    'Basic Website': true,
-                    'E-commerce': false,
-                    'Custom Animations': false,
-                    'AI Integration': false,
-                    'Advanced Analytics': false
-                },
-                '$1,000 - $5,000': {
-                    'Basic Website': true,
-                    'E-commerce': true,
-                    'Custom Animations': true, 
-                    'AI Integration': false,
-                    'Advanced Analytics': false
-                },
-                '$5,000 - $10,000': {
-                    'Basic Website': true,
-                    'E-commerce': true,
-                    'Custom Animations': true,
-                    'AI Integration': true,
-                    'Advanced Analytics': true
-                },
-                '$10,000 - $20,000': {
-                    'Basic Website': true,
-                    'E-commerce': true,
-                    'Custom Animations': true,
-                    'AI Integration': true,
-                    'Advanced Analytics': true
-                },
-                '$20,000+': {
-                    'Basic Website': true,
-                    'E-commerce': true,
-                    'Custom Animations': true,
-                    'AI Integration': true,
-                    'Advanced Analytics': true
+
+            clearFieldError(field) {
+                field.classList.remove('error');
+                const errorElement = document.getElementById(`${field.id}-error`);
+                if (errorElement) {
+                    errorElement.style.display = 'none';
                 }
-            };
-            
-            const ctx = document.getElementById('budget-chart').getContext('2d');
-            
-            // Check if a chart already exists and destroy it
-            if (window.budgetChart) {
-                window.budgetChart.destroy();
             }
-            
-            // Create chart data based on selected budget
-            let features = Object.keys(budgetRanges[Object.keys(budgetRanges)[0]]);
-            let availabilityData = [];
-            
-            if (budgetRanges[selectedBudget]) {
-                availabilityData = features.map(feature => budgetRanges[selectedBudget][feature] ? 1 : 0);
+
+            validateForm() {
+                const requiredFields = document.querySelectorAll('[required]');
+                let isValid = true;
+
+                requiredFields.forEach(field => {
+                    if (!this.validateField(field)) {
+                        isValid = false;
+                    }
+                });
+
+                return isValid;
             }
-            
-            window.budgetChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: features,
-                    datasets: [{
-                        label: `Available in ${selectedBudget} Budget`,
-                        data: availabilityData,
-                        backgroundColor: availabilityData.map(val => val ? 'rgba(37, 99, 235, 0.7)' : 'rgba(255, 76, 41, 0.3)'),
-                        borderColor: availabilityData.map(val => val ? 'rgba(37, 99, 235, 1)' : 'rgba(255, 76, 41, 1)'),
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#ffffff'
-                            }
+
+            calculatePrice() {
+                try {
+                    let total = this.basePrice;
+                    const breakdown = [
+                        { feature: 'Base Website Package', price: this.basePrice }
+                    ];
+
+                    // Calculate selected features
+                    const selectedFeatures = document.querySelectorAll('input[type="checkbox"][data-price]:checked');
+                    selectedFeatures.forEach(feature => {
+                        const price = parseInt(feature.dataset.price) || 0;
+                        total += price;
+                        if (price > 0) {
+                            breakdown.push({
+                                feature: feature.value,
+                                price: price
+                            });
                         }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            max: 1,
-                            ticks: {
-                                callback: function(value) {
-                                    return value === 1 ? 'Available' : 'Not Available';
-                                },
-                                color: '#ffffff'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
+                    });
+
+                    // Check for rush timeline
+                    const timeline = document.getElementById('timeline').value;
+                    if (timeline === 'ASAP') {
+                        const rushFee = Math.round(total * 0.2);
+                        total += rushFee;
+                        breakdown.push({
+                            feature: 'Rush Delivery (20%)',
+                            price: rushFee
+                        });
+                    }
+
+                    this.currentTotal = total;
+                    this.updatePricingDisplay(breakdown);
+                    this.updatePackageRecommendation();
+                    this.updatePaymentOptions();
+                } catch (error) {
+                    console.error('Price calculation error:', error);
+                    this.showStatus('Error calculating price. Please refresh the page.', 'error');
+                }
+            }
+
+            updatePricingDisplay(breakdown) {
+                // Update main total
+                document.getElementById('current-total').textContent = `$${this.currentTotal.toLocaleString()}`;
+
+                // Update breakdown
+                const breakdownContainer = document.getElementById('breakdown-items');
+                breakdownContainer.innerHTML = '';
+
+                breakdown.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'breakdown-item';
+                    div.innerHTML = `
+                        <span class="breakdown-feature">${item.feature}</span>
+                        <span class="breakdown-price">$${item.price.toLocaleString()}</span>
+                    `;
+                    breakdownContainer.appendChild(div);
+                });
+
+                // Add total
+                const totalDiv = document.createElement('div');
+                totalDiv.className = 'breakdown-item';
+                totalDiv.innerHTML = `
+                    <span class="breakdown-feature">Total Project Cost</span>
+                    <span class="breakdown-price">$${this.currentTotal.toLocaleString()}</span>
+                `;
+                breakdownContainer.appendChild(totalDiv);
+
+                // Update hidden form field
+                document.getElementById('calculated-price').value = this.currentTotal;
+            }
+
+            updatePackageRecommendation() {
+                const packages = document.querySelectorAll('.package-card');
+                packages.forEach(pkg => pkg.classList.remove('selected'));
+
+                let recommendedPackage = 'starter';
+                if (this.currentTotal >= 6000) {
+                    recommendedPackage = 'enterprise';
+                } else if (this.currentTotal >= 2500) {
+                    recommendedPackage = 'professional';
+                }
+
+                const recommendedCard = document.querySelector(`[data-package="${recommendedPackage}"]`);
+                if (recommendedCard) {
+                    recommendedCard.classList.add('selected');
+                }
+
+                this.selectedPackage = recommendedPackage;
+                document.getElementById('selected-package').value = recommendedPackage;
+            }
+
+            selectPackage(packageType) {
+                const packages = document.querySelectorAll('.package-card');
+                packages.forEach(pkg => pkg.classList.remove('selected'));
+
+                const selectedCard = document.querySelector(`[data-package="${packageType}"]`);
+                if (selectedCard) {
+                    selectedCard.classList.add('selected');
+                }
+
+                this.selectedPackage = packageType;
+                document.getElementById('selected-package').value = packageType;
+
+                // Update base price based on package
+                const packagePrices = {
+                    starter: 800,
+                    professional: 2500,
+                    enterprise: 6000
+                };
+
+                this.basePrice = packagePrices[packageType] || 800;
+                this.calculatePrice();
+            }
+
+            updatePaymentOptions() {
+                const fullPrice = Math.round(this.currentTotal * 0.9); // 10% discount
+                const monthlyPrice = Math.round(this.currentTotal / 6);
+
+                document.getElementById('full-price').textContent = `$${fullPrice.toLocaleString()}`;
+                document.getElementById('monthly-price').textContent = `$${monthlyPrice.toLocaleString()}/mo`;
+
+                // Clear previous PayPal buttons if payment type changes
+                if (this.paypalButtons) {
+                    this.clearPayPalButtons();
+                }
+            }
+
+            selectPaymentOption(paymentType) {
+                const paymentOptions = document.querySelectorAll('.payment-option');
+                paymentOptions.forEach(option => option.classList.remove('selected'));
+
+                const selectedOption = document.querySelector(`[data-type="${paymentType}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                }
+
+                this.selectedPaymentType = paymentType;
+                document.getElementById('payment-type').value = paymentType;
+
+                const amount = paymentType === 'full' 
+                    ? Math.round(this.currentTotal * 0.9) 
+                    : Math.round(this.currentTotal / 6);
+                
+                document.getElementById('payment-amount').value = amount;
+
+                // Clear PayPal buttons to force regeneration with new amount
+                this.clearPayPalButtons();
+            }
+
+            proceedToPayment() {
+                try {
+                    if (!this.validateForm()) {
+                        this.showStatus('Please fill in all required fields before proceeding to payment.', 'error');
+                        return;
+                    }
+
+                    if (!this.selectedPaymentType) {
+                        this.showStatus('Please select a payment option first.', 'warning');
+                        return;
+                    }
+
+                    const container = document.getElementById('paypal-button-container');
+                    container.style.display = 'block';
+                    
+                    // Clear any existing buttons
+                    this.clearPayPalButtons();
+                    
+                    // Initialize PayPal with current amount
+                    this.initializePayPal();
+                } catch (error) {
+                    console.error('Payment initialization error:', error);
+                    this.showStatus('Error initializing payment. Please try again.', 'error');
+                }
+            }
+
+            clearPayPalButtons() {
+                const container = document.getElementById('paypal-button-container');
+                container.innerHTML = '';
+                this.paypalButtons = null;
+                this.paypalInitialized = false;
+            }
+
+            initializePayPal() {
+                try {
+                    const amount = this.selectedPaymentType === 'full' 
+                        ? Math.round(this.currentTotal * 0.9) 
+                        : Math.round(this.currentTotal / 6);
+
+                    const description = `TNL-Media Website Development - ${this.selectedPackage.toUpperCase()} Package`;
+                    
+                    if (this.selectedPaymentType === 'plan') {
+                        description += ' (1st of 6 payments)';
+                    }
+
+                    this.paypalButtons = paypal.Buttons({
+                        createOrder: (data, actions) => {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        value: amount.toString()
+                                    },
+                                    description: description
+                                }]
+                            });
                         },
-                        y: {
-                            ticks: {
-                                color: '#ffffff'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
+                        onApprove: (data, actions) => {
+                            return actions.order.capture().then((details) => {
+                                this.handlePaymentSuccess(details);
+                            });
+                        },
+                        onError: (err) => {
+                            console.error('PayPal Error:', err);
+                            this.showStatus('Payment failed. Please try again or contact support.', 'error');
+                        },
+                        onCancel: () => {
+                            this.showStatus('Payment was cancelled.', 'warning');
                         }
-                    }
+                    });
+
+                    this.paypalButtons.render('#paypal-button-container');
+                    this.paypalInitialized = true;
+                } catch (error) {
+                    console.error('PayPal initialization error:', error);
+                    this.showStatus('Payment system error. Please refresh and try again.', 'error');
                 }
-            });
-        }
-        
-        // Form AI Chat
-        function initFormAI() {
-            const chatToggle = document.getElementById('chat-toggle');
-            const chatContainer = document.getElementById('form-ai-chat');
-            const chatClose = document.getElementById('chat-close');
-            const chatInput = document.getElementById('chat-input');
-            const chatSend = document.getElementById('chat-send');
-            const chatBody = document.getElementById('chat-body');
-            
-            // Toggle chat visibility
-            chatToggle.addEventListener('click', () => {
-                chatContainer.classList.toggle('show');
-            });
-            
-            chatClose.addEventListener('click', () => {
-                chatContainer.classList.remove('show');
-            });
-            
-            // Send message function
-            function sendMessage() {
-                const message = chatInput.value.trim();
-                if (message) {
-                    // Add user message
-                    const userMessageEl = document.createElement('div');
-                    userMessageEl.className = 'chat-message user-message';
-                    userMessageEl.textContent = message;
-                    chatBody.appendChild(userMessageEl);
-                    
-                    // Clear input
-                    chatInput.value = '';
-                    
-                    // Scroll to bottom
-                    chatBody.scrollTop = chatBody.scrollHeight;
-                    
-                    // Simple response logic (would be replaced with actual AI)
-                    setTimeout(() => {
-                        const aiMessageEl = document.createElement('div');
-                        aiMessageEl.className = 'chat-message ai-message';
-                        
-                        if (message.toLowerCase().includes('budget') || message.toLowerCase().includes('cost')) {
-                            aiMessageEl.textContent = 'Our pricing varies based on the complexity and features needed. Select a budget range in the form to see what features are typically included!';
-                        } else if (message.toLowerCase().includes('time') || message.toLowerCase().includes('timeline')) {
-                            aiMessageEl.textContent = 'Most projects take 2-4 weeks from approval to launch, depending on complexity. Larger e-commerce sites may take 6-8 weeks.';
-                        } else if (message.toLowerCase().includes('ai') || message.toLowerCase().includes('automation')) {
-                            aiMessageEl.textContent = 'Our AI integration options can automate customer support, content generation, and personalize user experiences. Check the AI & Automation section to select specific features!';
-                        } else if (message.toLowerCase().includes('web3') || message.toLowerCase().includes('blockchain')) {
-                            aiMessageEl.textContent = 'We offer various Web3 integrations including wallet connections, NFT showcases, and token-gated content. These features work best with modern, tech-focused designs.';
+            }
+
+            handlePaymentSuccess(details) {
+                try {
+                    // Update form with payment information
+                    document.getElementById('payment-status').value = 'completed';
+                    document.getElementById('payment-id').value = details.id;
+
+                    // Create form data
+                    const formData = new FormData(document.getElementById('website-form'));
+                    formData.append('payer_email', details.payer.email_address);
+                    formData.append('payment_amount_paid', details.purchase_units[0].amount.value);
+                    formData.append('payment_date', new Date().toISOString());
+
+                    // Submit form with payment data
+                    fetch('https://formspree.io/f/xwplavew', {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => {
+                        if (response.ok) {
+                            this.showSuccessScreen();
+                            this.clearSavedData();
                         } else {
-                            aiMessageEl.textContent = 'Thanks for your question! Fill out the form as best you can, and our team will follow up with you to discuss your specific needs in detail.';
+                            throw new Error('Form submission failed');
                         }
-                        
-                        chatBody.appendChild(aiMessageEl);
-                        chatBody.scrollTop = chatBody.scrollHeight;
-                    }, 1000);
+                    }).catch(error => {
+                        console.error('Form submission error:', error);
+                        this.showSuccessScreen(); // Still show success since payment worked
+                        this.showStatus('Payment successful! We will contact you shortly with project details.', 'success');
+                    });
+                } catch (error) {
+                    console.error('Payment success handling error:', error);
+                    this.showSuccessScreen();
                 }
             }
-            
-            chatSend.addEventListener('click', sendMessage);
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-        }
-        
-        // GSAP animations for form elements
-        function initAnimations() {
-            gsap.registerPlugin(ScrollTrigger);
-            
-            // Animate form groups
-            const formGroups = document.querySelectorAll('.form-group');
-            
-            formGroups.forEach((group, index) => {
-                gsap.to(group, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.7,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: group,
-                        start: "top 90%",
-                        toggleActions: "play none none none"
-                    },
-                    delay: index * 0.05
-                });
-            });
-            
-            // Animate title
-            gsap.from('h1', {
-                y: 100,
-                opacity: 0,
-                duration: 1.2,
-                ease: "power4.out"
-            });
-            
-            gsap.from('.subtitle', {
-                y: 50,
-                opacity: 0,
-                duration: 1.2,
-                delay: 0.3,
-                ease: "power4.out"
-            });
-            
-            // Animate section dividers
-            const sectionDividers = document.querySelectorAll('.form-section-divider');
-            
-            sectionDividers.forEach((divider, index) => {
-                gsap.from(divider, {
-                    opacity: 0,
-                    y: 50,
-                    duration: 0.8,
-                    scrollTrigger: {
-                        trigger: divider,
-                        start: "top 85%",
-                        toggleActions: "play none none none"
-                    },
-                    delay: index * 0.1
-                });
-            });
-            
-            // Animate shapes
-            gsap.to('.shape-1', {
-                x: 100,
-                rotation: 360,
-                duration: 40,
-                repeat: -1,
-                ease: "none"
-            });
-            
-            gsap.to('.shape-2', {
-                x: -100,
-                rotation: -360,
-                duration: 50,
-                repeat: -1,
-                ease: "none"
-            });
-        }
-        
-        // Form submission
-        document.getElementById('website-form').addEventListener('submit', function(e) {
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.innerHTML = '<span class="loading"></span> Submitting...';
-            submitBtn.disabled = true;
-            
-            // Formspree will handle the form submission
-            // No need to prevent default as we want the form to actually submit to Formspree
-            
-            // Show a submitting message
-            const formStatus = document.getElementById('form-status');
-            formStatus.innerHTML = 'Submitting your questionnaire...';
-            formStatus.className = 'form-status';
-            formStatus.style.display = 'block';
-            
-            // After form is submitted, Formspree will redirect to thank you page or show errors
-            // We'll handle this in a hidden iframe to avoid page reload
-            // Here we're just setting a backup in case the redirect doesn't work
-            setTimeout(() => {
-                if (submitBtn.disabled) {
-                    submitBtn.innerHTML = 'Submit Questionnaire';
-                    submitBtn.disabled = false;
-                }
-            }, 10000);
-        });
-        
-        // Check for saved form data on load
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const formId = urlParams.get('form');
-            
-            if (formId) {
-                const savedData = localStorage.getItem(`tnl-form-${formId}`);
-                if (savedData) {
-                    const formDataObj = JSON.parse(savedData);
+
+            showSuccessScreen() {
+                document.querySelector('.form-container').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            showCalculatorIfNeeded() {
+                const anyChecked = document.querySelectorAll('input[type="checkbox"]:checked').length > 1;
+                const calculator = document.getElementById('pricing-calculator');
+                
+                if (anyChecked && !calculator.classList.contains('active')) {
+                    calculator.classList.add('active');
+                    document.getElementById('fallback-submit').style.display = 'none';
                     
-                    for (const [key, value] of Object.entries(formDataObj)) {
-                        const field = document.querySelector(`[name="${key}"], #${key}`);
-                        if (field) {
-                            field.value = value;
-                        }
+                    gsap.fromTo(calculator, 
+                        { opacity: 0, y: 30 },
+                        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }
+                    );
+                } else if (!anyChecked) {
+                    document.getElementById('fallback-submit').style.display = 'block';
+                }
+            }
+
+            updateProgress() {
+                const requiredFields = document.querySelectorAll('[required]');
+                const totalFields = requiredFields.length;
+                let completed = 0;
+
+                requiredFields.forEach(field => {
+                    if (field.value.trim() !== '') {
+                        completed++;
+                    }
+                });
+
+                const progress = (completed / totalFields) * 100;
+                document.getElementById('form-progress').style.width = `${progress}%`;
+                document.querySelector('.progress-percentage').textContent = `${Math.round(progress)}% Complete`;
+
+                const remainingTime = Math.round((5 * (totalFields - completed)) / totalFields);
+                document.querySelector('.progress-time').textContent = `Estimated time: ${remainingTime} minutes`;
+            }
+
+            handleSubmit(e) {
+                e.preventDefault();
+                
+                if (!this.validateForm()) {
+                    this.showStatus('Please fill in all required fields.', 'error');
+                    return;
+                }
+
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="loading"></span> Submitting...';
+                submitBtn.disabled = true;
+
+                // Submit form data
+                const formData = new FormData(e.target);
+                
+                fetch('https://formspree.io/f/xwplavew', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        this.showStatus('Questionnaire submitted successfully! We\'ll be in touch soon.', 'success');
+                        this.clearSavedData();
+                        // Reset form or redirect as needed
+                    } else {
+                        throw new Error('Submission failed');
+                    }
+                }).catch(error => {
+                    console.error('Form submission error:', error);
+                    this.showStatus('Submission failed. Please try again or contact us directly.', 'error');
+                }).finally(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+            }
+
+            showStatus(message, type = 'info') {
+                const statusElement = document.getElementById('form-status');
+                statusElement.textContent = message;
+                statusElement.className = `form-status ${type}`;
+                statusElement.style.display = 'block';
+
+                if (type === 'success' || type === 'warning') {
+                    setTimeout(() => {
+                        statusElement.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            saveFormData() {
+                try {
+                    const formData = new FormData(document.getElementById('website-form'));
+                    const data = {};
+                    
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
                     }
                     
-                    updateProgress();
+                    // Save checkbox arrays properly
+                    const checkboxGroups = ['pages[]', 'features[]', 'ai-features[]', 'web3-features[]'];
+                    checkboxGroups.forEach(group => {
+                        const checked = Array.from(document.querySelectorAll(`input[name="${group}"]:checked`))
+                            .map(cb => cb.value);
+                        data[group] = checked;
+                    });
+
+                    localStorage.setItem('tnl-form-data', JSON.stringify(data));
+                } catch (error) {
+                    console.error('Error saving form data:', error);
                 }
             }
-            
-            initThree();
-            initAnimations();
-            initFormAI();
-            
-            // Add Portfolio preview logic
-            document.querySelectorAll('input[name="features[]"], input[name="style[]"]').forEach(checkbox => {
-                checkbox.addEventListener('change', updatePortfolioPreview);
-            });
-            
-            // Update progress when fields change
-            document.querySelectorAll('input, select, textarea').forEach(field => {
-                field.addEventListener('input', updateProgress);
-                field.addEventListener('change', updateProgress);
-            });
-            
-            // Initialize budget visualizer
-            document.getElementById('budget').addEventListener('change', showBudgetChart);
-            
-            // Share link copy functionality
-            document.getElementById('share-link').addEventListener('click', function(e) {
-                e.preventDefault();
-                const link = this.getAttribute('data-link');
-                
-                navigator.clipboard.writeText(link).then(() => {
-                    const formStatus = document.getElementById('form-status');
-                    formStatus.innerHTML = 'Link copied to clipboard!';
-                    formStatus.className = 'form-status success';
-                    formStatus.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        formStatus.style.display = 'none';
-                    }, 3000);
-                }).catch(err => {
-                    console.error('Could not copy text: ', err);
-                });
-            });
-            
-            // Handle form submission success/error from Formspree
-            if (window.location.search.includes('submitted=true')) {
-                document.querySelector('.form-section').style.display = 'none';
-                document.getElementById('thank-you-screen').style.display = 'block';
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            } else if (window.location.search.includes('error=true')) {
-                const formStatus = document.getElementById('form-status');
-                formStatus.innerHTML = 'There was an error submitting the form. Please try again.';
-                formStatus.className = 'form-status error';
-                formStatus.style.display = 'block';
+
+            loadSavedData() {
+                try {
+                    const saved = localStorage.getItem('tnl-form-data');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        
+                        // Load text inputs and selects
+                        Object.keys(data).forEach(key => {
+                            if (!key.includes('[]')) {
+                                const field = document.querySelector(`[name="${key}"]`);
+                                if (field && field.type !== 'checkbox') {
+                                    field.value = data[key];
+                                }
+                            }
+                        });
+
+                        // Load checkbox arrays
+                        const checkboxGroups = ['pages[]', 'features[]', 'ai-features[]', 'web3-features[]'];
+                        checkboxGroups.forEach(group => {
+                            if (data[group] && Array.isArray(data[group])) {
+                                data[group].forEach(value => {
+                                    const checkbox = document.querySelector(`input[name="${group}"][value="${value}"]`);
+                                    if (checkbox) {
+                                        checkbox.checked = true;
+                                    }
+                                });
+                            }
+                        });
+
+                        this.calculatePrice();
+                        this.updateProgress();
+                        this.showCalculatorIfNeeded();
+                    }
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
+                }
             }
+
+            clearSavedData() {
+                localStorage.removeItem('tnl-form-data');
+            }
+
+            setupCursor() {
+                const cursor = document.querySelector('.custom-cursor');
+                
+                if (window.innerWidth <= 768) {
+                    cursor.style.display = 'none';
+                    return;
+                }
+                
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                });
+                
+                const hoverElements = document.querySelectorAll('button, input, textarea, select, .checkbox-item, a, .package-card, .payment-option');
+                
+                hoverElements.forEach(element => {
+                    element.addEventListener('mouseenter', () => {
+                        cursor.classList.add('hover');
+                    });
+                    
+                    element.addEventListener('mouseleave', () => {
+                        cursor.classList.remove('hover');
+                    });
+                });
+            }
+
+            initThreeJS() {
+                try {
+                    const scene = new THREE.Scene();
+                    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    
+                    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                    document.getElementById('canvas-container').appendChild(renderer.domElement);
+                    
+                    const particleCount = 150;
+                    const particleGeometry = new THREE.BufferGeometry();
+                    const positions = new Float32Array(particleCount * 3);
+                    
+                    for (let i = 0; i < particleCount; i++) {
+                        const i3 = i * 3;
+                        positions[i3] = (Math.random() - 0.5) * 10;
+                        positions[i3 + 1] = (Math.random() - 0.5) * 10;
+                        positions[i3 + 2] = (Math.random() - 0.5) * 10;
+                    }
+                    
+                    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                    
+                    const particleMaterial = new THREE.PointsMaterial({
+                        color: 0x2563eb,
+                        size: 0.1,
+                        transparent: true,
+                        opacity: 0.6,
+                        blending: THREE.AdditiveBlending
+                    });
+                    
+                    const particles = new THREE.Points(particleGeometry, particleMaterial);
+                    scene.add(particles);
+                    
+                    camera.position.z = 5;
+                    
+                    function animate() {
+                        requestAnimationFrame(animate);
+                        
+                        particles.rotation.x += 0.0005;
+                        particles.rotation.y += 0.0008;
+                        
+                        renderer.render(scene, camera);
+                    }
+                    
+                    animate();
+
+                    window.addEventListener('resize', () => {
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    });
+                } catch (error) {
+                    console.error('Three.js initialization error:', error);
+                }
+            }
+
+            initAnimations() {
+                try {
+                    gsap.registerPlugin(ScrollTrigger);
+                    
+                    const formGroups = document.querySelectorAll('.form-group');
+                    
+                    formGroups.forEach((group, index) => {
+                        gsap.to(group, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.7,
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: group,
+                                start: "top 90%",
+                                toggleActions: "play none none none"
+                            },
+                            delay: index * 0.05
+                        });
+                    });
+                    
+                    gsap.from('h1', {
+                        y: 100,
+                        opacity: 0,
+                        duration: 1.2,
+                        ease: "power4.out"
+                    });
+                    
+                    gsap.from('.subtitle', {
+                        y: 50,
+                        opacity: 0,
+                        duration: 1.2,
+                        delay: 0.3,
+                        ease: "power4.out"
+                    });
+
+                    gsap.to('.shape-1', {
+                        x: 100,
+                        rotation: 360,
+                        duration: 40,
+                        repeat: -1,
+                        ease: "none"
+                    });
+                    
+                    gsap.to('.shape-2', {
+                        x: -100,
+                        rotation: -360,
+                        duration: 50,
+                        repeat: -1,
+                        ease: "none"
+                    });
+                } catch (error) {
+                    console.error('Animation initialization error:', error);
+                }
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                new PricingCalculator();
+            } catch (error) {
+                console.error('Application initialization error:', error);
+                alert('There was an error loading the application. Please refresh the page.');
+            }
+        });
+
+        // Global error handler
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+        });
+
+        // Unhandled promise rejection handler
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
         });
     </script>
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDpi7Soy%2FEvb11obB8O1qk9TfLVmliqosBbIQP9UVtrDySB7ckUsRzmjqN9MhOepONJSri6EkyNlMTmQARwlyJZEuowL8bT914R1h9bg4saaa%2FRim9iPTqE%2Fqiq9T0TOhXsDbWDqJhoS9QL9DgfMRxtygoQV%2FL5I%2FotthVZ6fgLLZy4sHBu%2FICO5%2F306kk3EldhhkuJqO3D8o2w7XW1HeGJPVaP%2B538s5S6M9KRpIsL74ZdLvx7tSXms7fSZXs5nIOy%2FHrQxV2emRRU0VwKQBzy5MbZSsPn2uMXcUKEdUuliYQ8obP%2FWZDX4Q2UGb%2FEyXoMiUcFE1EkAZwWXYC1GO3Zf119N0wZLUPCOqrIg5%2FjwkHGFomSItHRtsqwJ%2BEkk0VF5rk%2FKcyRkNvIYcC77CM2qFYj2%2FpPj4zIMx4LZ0d%2BTl6QKeWDmgE2I4Yy%2FaXOpbXNsxZEGznFtSoBJBIhYWLisEvJN8C6bZYYnzB770nIgZJ4gmYcrc%2BgXXJmyVBTq1VqI8q9SvhKev%2Fr%2BpETGksqo%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDke2M3uVPSvi2uX%2BToVcAq2va8qQbAEAiouOe8mRvGDyCVhx2aoO3AErPpsnyxdwLiRcju6nuYHBwUmi6Si7yYIjP6RnAxcMo6I7zaeVbaM%2BpEo9yz4LETstAeXJ0cbS96NfwZD0JNbk0npK16t8TvK1aqNbHIO5PYg94%2BPqThzjBn%2FSm0yR3H6XoDN1UEg7KAEYKJcoTUcJW6%2F0Z%2B0QYosnnzJIx1HvnmYuXWkm8%2BdsfGCbZP5gooAeYwOE1%2Fi54bZdEsFeHAhKkY4kFD0PF3D%2FB7lE%2F%2BMUUNy38F1bnBy8DqWRggcOJzELXh%2FJjPDZIxjsLgYH%2F4mpOHt3aqKU9d379hty4xo3SWnZOk1KaoXdko4Vqngr4c4JAMDoY1N7uF0Ym0g80f%2FRSj8O%2BmDBf6FqyRSZ93LaNorvj3v531WclYRBtEfXeh6dcdGoY3HpWAOzlBKeMKxlXkw0Xb5lNzaMVWs5Vd5lQjMPGzMbbwbJ9PmrOfuSmIkmrKDMKjhc2mHOmkI4%2FfyIwjM42GjfW4Q%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDpi7Soy/Evb11obB8O1qk9TfLVmliqosBbIQP9UVtrDySB7ckUsRzmjqN9MhOepONJSri6EkyNlMTmQARwlyJZEuowL8bT914R1h9bg4saaa/Rim9iPTqE/qiq9T0TOhXsDbWDqJhoS9QL9DgfMRxtygoQV/L5I/otthVZ6fgLLZy4sHBu/ICO5/306kk3EldhhkuJqO3D8o2w7XW1HeGJPVaP+538s5S6M9KRpIsL74ZdLvx7tSXms7fSZXs5nIOy/HrQxV2emRRU0VwKQBzy5MbZSsPn2uMXcUKEdUuliYQ8obP/WZDX4Q2UGb/EyXoMiUcFE1EkAZwWXYC1GO3Zf119N0wZLUPCOqrIg5/jwkHGFomSItHRtsqwJ+Ekk0VF5rk/KcyRkNvIYcC77CM2qFYj2/pPj4zIMx4LZ0d+Tl6QKeWDmgE2I4Yy/aXOpbXNsxZEGznFtSoBJBIhYWLisEvJN8C6bZYYnzB770nIgZJ4gmYcrc+gXXJmyVBTq1VqI8q9SvhKev/r+pETGksqo=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDke2M3uVPSvi2uX+ToVcAq2va8qQbAEAiouOe8mRvGDyCVhx2aoO3AErPpsnyxdwLiRcju6nuYHBwUmi6Si7yYIjP6RnAxcMo6I7zaeVbaM+pEo9yz4LETstAeXJ0cbS96NfwZD0JNbk0npK16t8TvK1aqNbHIO5PYg94+PqThzjBn/Sm0yR3H6XoDN1UEg7KAEYKJcoTUcJW6/0Z+0QYosnnzJIx1HvnmYuXWkm8+dsfGCbZP5gooAeYwOE1/i54bZdEsFeHAhKkY4kFD0PF3D/B7lE/+MUUNy38F1bnBy8DqWRggcOJzELXh/JjPDZIxjsLgYH/4mpOHt3aqKU9d379hty4xo3SWnZOk1KaoXdko4Vqngr4c4JAMDoY1N7uF0Ym0g80f/RSj8O+mDBf6FqyRSZ93LaNorvj3v531WclYRBtEfXeh6dcdGoY3HpWAOzlBKeMKxlXkw0Xb5lNzaMVWs5Vd5lQjMPGzMbbwbJ9PmrOfuSmIkmrKDMKjhc2mHOmkI4/fyIwjM42GjfW4Q=";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
